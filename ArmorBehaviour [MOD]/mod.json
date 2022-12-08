@@ -2,7 +2,7 @@
   "Name": "Armor Behaviour+",
   "Author": "Studio Plus",
   "Description": "A revamped and improved version of ArmorBehaviour. \n(Originally created probably by 'weirdo')",
-  "ModVersion": "v1.0.0",
+  "ModVersion": "v1.0.1",
   "GameVersion": "1.26+",
   "ThumbnailPath": "Textures/Views/Helmet View.png",
   "EntryPoint": "Mod.Mod",
@@ -18,7 +18,7 @@
     "Code/StudioPlusAPI.cs",
     "Code/Behaviours.cs"
   ],
-  "Active": true,
+  "Active": false,
   "UGCIdentity": null,
-  "CreatorUGCIdentity": null
+  "CreatorUGCIdentity": "2897093610"
 }

@@ -9,7 +9,7 @@ using TMPro;
 using UnityEngine.Events;
 
 //This is the OFFICIAL version of StudioPlusAPI by Studio Plus, used by all Studio Plus Mods
-//Current API version: v1.1.0
+//Current API version: v1.1.1
 //StudioPlusAPI is open-source project gifted to the community, meaning you can do anything with it
 //As long as you don't claim it as your own creation
 //Link to the repository: https://github.com/Studio-Plus/Studio-Plus-API
@@ -229,16 +229,15 @@ namespace Mod
         LimbBehaviour limb;
         PhysicalBehaviour phys;
         public string limbType;
-        public bool equipped = false;
-        public bool wasEquipped = false;
+        bool equipped = false;
         public float stabResistance;
         public int defaultSortingOrder;
         public int armorSortingOrder;
-        public Transform parent;
-        public Collider2D[] limbColliders;
-        public List<Collider2D> otherArmorColliders = new List<Collider2D>();
-        public GameObject attachedLimb;
-        public Type armorWearerType;
+        Transform parent;
+        Collider2D[] limbColliders;
+        List<Collider2D> otherArmorColliders = new List<Collider2D>();
+        GameObject attachedLimb;
+        Type armorWearerType;
         public bool wasSpawned = false;
 
         public void CreateArmor(string newLimbType, float newStabResistance, int newDefSortingOrder = 0)
@@ -349,7 +348,6 @@ namespace Mod
         {
             phys = GetComponent<PhysicalBehaviour>();
             equipped = true;
-            wasEquipped = false;
             attachedLimb = limbObject;
             GetComponent<SpriteRenderer>().sortingLayerName = attachedLimb.GetComponent<SpriteRenderer>().sortingLayerName;           
             GetComponent<SpriteRenderer>().sortingOrder = attachedLimb.GetComponent<SpriteRenderer>().sortingOrder + armorSortingOrder;
@@ -382,8 +380,6 @@ namespace Mod
 
         public void Detach()
         {
-            equipped = false;
-            wasEquipped = true;
             GetComponent<SpriteRenderer>().sortingLayerName = "Default";
             GetComponent<SpriteRenderer>().sortingOrder = defaultSortingOrder;
             Destroy(GetComponent<FixedJoint2D>());
@@ -399,16 +395,17 @@ namespace Mod
         private System.Collections.IEnumerator ArmorCollision() 
         {
             yield return new WaitForSeconds(5f);
-            if (wasEquipped == false)
-                yield break;
-            wasEquipped = false;
-            StudioPlusAPI.ToggleEntityCollision(GetComponent<Collider2D>(), limbColliders, false);
-            foreach (GripBehaviour grip in attachedLimb.transform.root.GetComponentsInChildren<GripBehaviour>())
+            if (attachedLimb != null)
             {
-                grip.RefreshNoCollide(false);
-                grip.RefreshNoCollide(true);
+                StudioPlusAPI.ToggleEntityCollision(GetComponent<Collider2D>(), limbColliders, false);
+                foreach (GripBehaviour grip in attachedLimb.transform.root.GetComponentsInChildren<GripBehaviour>())
+                {
+                    grip.RefreshNoCollide(false);
+                    grip.RefreshNoCollide(true);
+                }
+                attachedLimb = null;
             }
-            attachedLimb = null;
+            equipped = false;
 
         }
 
