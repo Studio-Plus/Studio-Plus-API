@@ -9,7 +9,7 @@ using TMPro;
 using UnityEngine.Events;
 
 //This is the OFFICIAL version of StudioPlusAPI by Studio Plus, used by all Studio Plus Mods
-//Current API version: v1.1.1
+//Current API version: v1.1.2
 //StudioPlusAPI is open-source project gifted to the community, meaning you can do anything with it
 //As long as you don't claim it as your own creation
 //Link to the repository: https://github.com/Studio-Plus/Studio-Plus-API
@@ -285,8 +285,8 @@ namespace Mod
                 new ContextMenuButton(
                     () => equipped == true,
                     "detachArmor",
-                    "Detach Armor",
-                    "Detach Multiple Armor Pieces",
+                    "Detach armor",
+                    "Detach multiple armor pieces",
                     () =>
                     {
                         Detach();
