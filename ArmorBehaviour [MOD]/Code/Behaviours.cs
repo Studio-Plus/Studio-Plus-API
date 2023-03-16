@@ -7,17 +7,18 @@ using UnityEngine.UI;
 using System.Linq;
 using TMPro;
 using UnityEngine.Events;
+using StudioPlusAPI;
 
 namespace Mod
 {
     public class CustomBodyArmorWearer : BodyArmorWearer
     {
-        //This counts as BodyArmorWearer, meaning that it will not stack with other body armor
+        //This (sort of, sometimes) counts as BodyArmorWearer, meaning that it will not stack with other body armor (that's the theory anyway)
         public override void Start()
         {
             base.Start();
             //If you want your armor to do something when spawned, you put it in here. It's important that base.Start(); is included
-            //You don't have to do this though if you won't be changing anything as shown by BodyArmorWearerin in StudioPlusAPI.cs
+            //You don't have to do this though if you won't be changing anything as shown by BodyArmorWearer in StudioPlusAPI.cs
         }
     }
 

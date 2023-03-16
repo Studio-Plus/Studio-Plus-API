@@ -9,7 +9,7 @@ using TMPro;
 using UnityEngine.Events;
 
 //This is the OFFICIAL version of StudioPlusAPI by Studio Plus, used by all Studio Plus Mods
-//Current API version: v1.1.2
+//Current API version: v2.0.0
 //StudioPlusAPI is open-source project gifted to the community, meaning you can do anything with it
 //As long as you don't claim it as your own creation
 //Link to the repository: https://github.com/Studio-Plus/Studio-Plus-API
@@ -20,10 +20,10 @@ using UnityEngine.Events;
 //As long as you don't claim it as your own creation, shown by this mod creator leaving this comment in here.
 //Link to the original repository: https://github.com/Studio-Plus/Studio-Plus-API
 
-namespace Mod
+namespace StudioPlusAPI
 {
     //Special thanks to pjstatt12 for creating AddLiquidToItem, LiquidReaction and TripleLiquidReaction!
-    public struct StudioPlusAPI
+    public struct ChemistryPlus
     {
         public static void AddLiquidToItem(string ExistingItem, string NewLiquidID, float LiquidAmount)
         {
@@ -83,32 +83,10 @@ namespace Mod
         //    }, 
         //    Liquid.GetLiquid("POWERPUFF GIRLS")
         //);
+    }
 
-
-        //Originally borrowed from human tiers mod
-        //Obsolete for 1.26 and above
-        public static void CreateCategory(string name, string description, Sprite icon)
-        {
-            CatalogBehaviour manager = UnityEngine.Object.FindObjectOfType<CatalogBehaviour>();
-            if (manager.Catalog.Categories.FirstOrDefault((Category c) => c.name == name) == null)
-            {
-                Category category = ScriptableObject.CreateInstance<Category>();
-                category.name = name;
-                category.Description = description;
-                category.Icon = icon;
-                Category[] NewCategories = new Category[manager.Catalog.Categories.Length + 1];
-                Category[] categories = manager.Catalog.Categories;
-                for (int i = 0; i < categories.Length; i++)
-                {
-                    NewCategories[i] = categories[i];
-                }
-                NewCategories[NewCategories.Length - 1] = category;
-                manager.Catalog.Categories = NewCategories;
-            }
-        }
-        //StudioPlusAPI.CreateCategory("Category Name", "This is my category", ModAPI.LoadSprite("Textures/Mod/Category Icon.png"));
-
-
+    public struct TexturePlus
+    {
         public static void CreateLightSprite(GameObject LightObject, Transform parentObject, Sprite lightSprite, Vector2 position, Color color, float scale = 1f)
         {
             LightObject.transform.SetParent(parentObject);
@@ -142,7 +120,38 @@ namespace Mod
         //    new Color32(255, 0, 0, 127)
         //);
 
+        public static void ReplaceItemSprite(string ItemToReplace, Sprite ReplaceTexture)
+        {
+            ModAPI.FindSpawnable(ItemToReplace).Prefab.GetComponent<SpriteRenderer>().sprite = ReplaceTexture;
+        }
+        //StudioPlusAPI.ReplaceItemSpriteOfChild("Sword", ModAPI.LoadSprite("Upscaled Sword.png"));
 
+        public static void ReplaceItemSpriteOfChild(string ItemToReplace, string ChildObject, Sprite ReplaceTexture)
+        {
+            ModAPI.FindSpawnable(ItemToReplace).Prefab.transform.Find(ChildObject).GetComponent<SpriteRenderer>().sprite = ReplaceTexture;
+        }
+        //This one is specifically for e.g. axe:
+        //StudioPlusAPI.ReplaceItemSpriteOfChild("Axe","Axe handle/Axe head", ModAPI.LoadSprite("Futuristic Axe Head.png"));
+        //Where do you get this path from? From here: https://www.studiominus.nl/ppg-modding/gameAssets.html
+
+        public static void ReplaceViewSprite(string ItemToReplace, Sprite ReplaceTexture)
+        {
+            ModAPI.FindSpawnable(ItemToReplace).ViewSprite = ReplaceTexture;
+        }
+        //StudioPlusAPI.ReplaceItemSpriteOfChild("Sword", ModAPI.LoadSprite("Upscaled Sword View.png"));
+
+        public static void ReplaceSprites(string ItemToReplace, Sprite ItemReplaceTexture, Sprite ViewReplaceTexture)
+        {
+            ModAPI.FindSpawnable(ItemToReplace).Prefab.GetComponent<SpriteRenderer>().sprite = ItemReplaceTexture;
+            ModAPI.FindSpawnable(ItemToReplace).ViewSprite = ViewReplaceTexture;
+        }
+        //Does ReplaceItemSprite and ReplaceViewSprite at once:
+        //StudioPlusAPI.ReplaceItemSpriteOfChild("Sword", ModAPI.LoadSprite("Upscaled Sword.png"), ModAPI.LoadSprite("Upscaled Sword View.png"));
+    }
+
+
+    public struct CreationPlus
+    {
         public static void SpawnItem(SpawnableAsset item, Vector2 position = default(Vector2), bool spawnSpawnParticles = false)
         {
             GameObject spawnedItem = UnityEngine.Object.Instantiate(item.Prefab, position, Quaternion.identity);
@@ -171,35 +180,6 @@ namespace Mod
         //These 2 are somewhat hard to explain so I can't go into detail here, sorry
 
 
-        public static void SpawnGameObject(GameObject SpawnObject, Vector2 position = default(Vector2))
-        {
-            SpawnObject.AddComponent<AudioSourceTimeScaleBehaviour>();
-        }
-        //Add 'GameObject myObject' as one of the variables at the beginning of your class (so you can modify it later) and:
-        //StudioPlusAPI.SpawnGameObject(myObject, ModAPI.FindSpawnable("Blaster Rifle").Prefab.GetComponent<BlasterBehaviour>().Bolt);
-        //This in particular will spawn in a blaster rifle bolt
-
-
-        public static void ToggleEntityCollision(Collider2D main, Collider2D[] others, bool ignColl, bool affectItself = false)
-        {
-            foreach (Collider2D a in others)
-            {
-                IgnoreCollisionStackController.IgnoreCollisionSubstituteMethod(main, a, ignColl);
-                foreach (Collider2D b in others)
-                {
-                    if ((bool)a && (bool)b && a != b && a.transform != b.transform && affectItself == true)
-                        IgnoreCollisionStackController.IgnoreCollisionSubstituteMethod(a, b, ignColl);
-                }
-            }
-        }
-
-        public static void ToggleCollision(Collider2D main, Collider2D other, bool ignColl)
-        {
-            IgnoreCollisionStackController.IgnoreCollisionSubstituteMethod(main, other, ignColl);
-        }
-        //This is basically a short-hand version of the actual PPG method because I won't be typing IgnoreCollisionStackController.IgnoreCollisionSubstituteMethod every time I want to do something with collisions
-
-
         public static void CreateHingeJoint(GameObject main, GameObject other, Vector2 position, float minDeg, float maxDeg)
         {
             HingeJoint2D joint = main.AddComponent<HingeJoint2D>();
@@ -222,6 +202,30 @@ namespace Mod
             joint.connectedBody = other.GetComponent<Rigidbody2D>();
         }
         //StudioPlusAPI.CreateFixedJoint(gameObject, myObject);
+    }
+
+
+    public struct PlusAPI
+    {
+        public static void ToggleEntityCollision(Collider2D main, Collider2D[] others, bool ignColl, bool affectItself = false)
+        {
+            foreach (Collider2D a in others)
+            {
+                IgnoreCollisionStackController.IgnoreCollisionSubstituteMethod(main, a, ignColl);
+                foreach (Collider2D b in others)
+                {
+                    if ((bool)a && (bool)b && a != b && a.transform != b.transform && affectItself == true)
+                        IgnoreCollisionStackController.IgnoreCollisionSubstituteMethod(a, b, ignColl);
+                }
+            }
+        }
+
+
+        public static void ToggleCollision(Collider2D main, Collider2D other, bool ignColl)
+        {
+            IgnoreCollisionStackController.IgnoreCollisionSubstituteMethod(main, other, ignColl);
+        }
+        //This is basically a short-hand version of the actual PPG method because I won't be typing IgnoreCollisionStackController.IgnoreCollisionSubstituteMethod every time I want to do something with collisions
     }
 
     public class ArmorBehaviour : MonoBehaviour
@@ -303,10 +307,10 @@ namespace Mod
                     return;
                 var armorPiece = collider.gameObject.GetComponent<ArmorBehaviour>();
                 if (equipped == true || armorWearerType == armorPiece.armorWearerType || limbType == armorPiece.limbType)
-                    StudioPlusAPI.ToggleCollision(GetComponent<Collider2D>(), collider, true);
+                    PlusAPI.ToggleCollision(GetComponent<Collider2D>(), collider, true);
                 else
                 {
-                    StudioPlusAPI.ToggleCollision(GetComponent<Collider2D>(), collider, false);
+                    PlusAPI.ToggleCollision(GetComponent<Collider2D>(), collider, false);
                 }
             }
             if (equipped == true && attachedLimb == null)
@@ -353,11 +357,12 @@ namespace Mod
             GetComponent<SpriteRenderer>().sortingOrder = attachedLimb.GetComponent<SpriteRenderer>().sortingOrder + armorSortingOrder;
             GetComponent<Rigidbody2D>().isKinematic = true;
             limbColliders = attachedLimb.transform.root.GetComponentsInChildren<Collider2D>();
-            StudioPlusAPI.ToggleEntityCollision(GetComponent<Collider2D>(), limbColliders, true);
+            PlusAPI.ToggleEntityCollision(GetComponent<Collider2D>(), limbColliders, true);
 
             ArmorWearer armorWearer = attachedLimb.AddComponent(armorWearerType) as ArmorWearer;
             armorWearer.armorExists = true;
             armorWearer.armorName = transform.root.gameObject.name;
+            armorWearer.armorObject = gameObject;
 
             transform.SetParent(attachedLimb.transform);
             transform.rotation = attachedLimb.transform.rotation;
@@ -397,7 +402,7 @@ namespace Mod
             yield return new WaitForSeconds(5f);
             if (attachedLimb != null)
             {
-                StudioPlusAPI.ToggleEntityCollision(GetComponent<Collider2D>(), limbColliders, false);
+                PlusAPI.ToggleEntityCollision(GetComponent<Collider2D>(), limbColliders, false);
                 foreach (GripBehaviour grip in attachedLimb.transform.root.GetComponentsInChildren<GripBehaviour>())
                 {
                     grip.RefreshNoCollide(false);
@@ -420,6 +425,7 @@ namespace Mod
     {
         public bool armorExists = false;
         public string armorName;
+        public GameObject armorObject;
 
         public virtual void Start()
         {
@@ -427,7 +433,7 @@ namespace Mod
                 armorExists = false;
             else
             {
-                StudioPlusAPI.SpawnItem(ModAPI.FindSpawnable(armorName), transform.position);
+                CreationPlus.SpawnItem(ModAPI.FindSpawnable(armorName), transform.position);
                 Destroy(this);
             }
         }
