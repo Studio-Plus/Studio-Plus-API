@@ -9,11 +9,8 @@ using TMPro;
 using UnityEngine.Events;
 using StudioPlusAPI;
 
-//This is a PUBLIC version of StudioPlusAPI by Studio Plus
-//Based on version v3.0.0
-//The mod author might have added, changed or removed features or might have even changed the name of it.
-//StudioPlusAPI is an open-source project gifted to the community, meaning that you can do anything with it
-//As long as you don't claim it as your own creation, shown by this mod creator leaving this comment in here.
+//StudioPlusAPI is an API for the game people playground, created by Dawid23 Gamer and Studio Plus. It allows for modders to program mods for the game more easily, or at least that's the idea. 
+//This API is released under the zlib license, by using it for your mod and/or downloading it you confirm that you read and agreed to the terms of said license.
 //Link to the original repository: https://github.com/Studio-Plus/Studio-Plus-API
 //API DEPENDENCIES: CreationPlus.cs, PlusAPI.cs
 
