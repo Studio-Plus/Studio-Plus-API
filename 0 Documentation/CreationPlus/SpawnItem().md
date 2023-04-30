@@ -31,7 +31,7 @@ Basically the same as the regular method but more straight forward because it ac
 var newObject = CreationPlus.SpawnItemAsChild(ModAPI.FindSpawnable("Crossbow Bolt"), transform);
 ```
 
-### SpawnItemAsChild()
+### SpawnItemStatic()
 The so far only hidden method that is blocked by comments.
 ```cs
 /*
