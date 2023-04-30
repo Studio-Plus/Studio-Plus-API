@@ -19,7 +19,7 @@ You can also mix 3 liquids into one:
 ```cs
 ChemistryPlus.LiquidReaction(Sugar.ID, Spice.ID, EverythingNice.ID, ThePerfectLittleGirl.ID);
 ```
-For advanced users, you can use an array to mix as many liquids into one as you want. It is not possible to mix e.g. 4 liquids into 2 with 1 API method, although it shouldn't be hard to implement something like this.
+For advanced users, you can use an array to mix as many liquids into one as you want:
 ```cs
 ChemistryPlus.LiquidReaction(
     new Liquid[]
@@ -33,3 +33,4 @@ ChemistryPlus.LiquidReaction(
 )
 //If you're wondering, no, I'm not a Powerpuff Girls fan, it's just a fun example.
 ```
+It is not possible to mix e.g. 4 liquids into 2 with 1 API method, although it shouldn't be hard to implement something like this.

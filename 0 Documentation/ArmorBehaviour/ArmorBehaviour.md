@@ -1,6 +1,6 @@
 # StudioPlusAPI
 ## ArmorBehaviour (REQUIRES CreationPlus and PlusAPI)
-### public class ArmorBehaviour
+### public class ArmorBehaviour : MonoBehaviour
 This class must be added to the object you want to make into armor in order for it to be armor.
 
 But simply adding the ArmorBehaviour is not enough. In order for it to work, you must add in one of the default 3 **armor constructor methods**.<br/>

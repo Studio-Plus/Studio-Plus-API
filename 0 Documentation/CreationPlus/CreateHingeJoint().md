@@ -1,6 +1,6 @@
 # StudioPlusAPI
 ## CreationPlus
-### CreateFixedJoint()
+### CreateHingeJoint()
 Creates a hinge joint between two objects.
 ```cs
 public static void CreateHingeJoint(GameObject main, GameObject other, Vector2 position, float minDeg, float maxDeg)

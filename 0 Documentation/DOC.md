@@ -41,7 +41,7 @@ You can also mix 3 liquids into one:
 ```cs
 ChemistryPlus.LiquidReaction(Sugar.ID, Spice.ID, EverythingNice.ID, ThePerfectLittleGirl.ID);
 ```
-For advanced users, you can use an array to mix as many liquids into one as you want. It is not possible to mix e.g. 4 liquids into 2 with 1 API method, although it shouldn't be hard to implement something like this.
+For advanced users, you can use an array to mix as many liquids into one as you want:
 ```cs
 ChemistryPlus.LiquidReaction(
     new Liquid[]
@@ -55,6 +55,7 @@ ChemistryPlus.LiquidReaction(
 )
 //If you're wondering, no, I'm not a Powerpuff Girls fan, it's just a fun example.
 ```
+It is not possible to mix e.g. 4 liquids into 2 with 1 API method, although it shouldn't be hard to implement something like this.
 
 ### Liquid ID List (for v1.26.6)
 When working with specific liquids in general, you should use a reference to the liquid class ID string instead of a plain string to avoid zooi's changes to any names causing your mods to break<br/>
@@ -312,7 +313,7 @@ Allows you to spawn another item.
 public static GameObject SpawnItem(SpawnableAsset item, Transform parent, Vector3 position = default, bool spawnSpawnParticles = false)
 ```
 The way it works is that it doesn't actually make the object the child of the Transform you put in (typical programmer bad variable naming), but it spawns the item in rotated to align with the said item and at the position of said item unless specified otherwise with the position parameter.<br/>
-Here are some examples:
+Here are some examples:<br/>
 Example 1:
 ```cs
 var newObject = CreationPlus.SpawnItem(ModAPI.FindSpawnable("Crossbow Bolt"), transform);
@@ -361,7 +362,7 @@ If for any reason you have to change the position of said joint, you can use the
 CreationPlus.CreateFixedJoint(gameObject, myObject, new Vector2(0f, 3f) * ModAPI.PixelSize);
 ```
 
-### CreateFixedJoint()
+### CreateHingeJoint()
 Creates a hinge joint between two objects.
 ```cs
 public static void CreateHingeJoint(GameObject main, GameObject other, Vector2 position, float minDeg, float maxDeg)
@@ -483,7 +484,7 @@ var lowerArmFront = LimbList.FindLimb(Instance, LimbList.lowerArmFront);
 Now it is just a bit longer with the benefit of being more straight forward in this example
 
 ## ArmorBehaviour (REQUIRES CreationPlus and PlusAPI)
-### public class ArmorBehaviour
+### public class ArmorBehaviour : MonoBehaviour
 This class must be added to the object you want to make into armor in order for it to be armor.
 
 But simply adding the ArmorBehaviour is not enough. In order for it to work, you must add in one of the default 3 **armor constructor methods**.<br/>
@@ -574,7 +575,7 @@ Well I can at least tell you how Armor collides with Other Armor. Basically, if:
 
 The armor pieces will not collide. The last condition is in place to make placing armor on an entity that already has armor easier.
 
-### public abstract class ArmorWearer
+### public abstract class ArmorWearer : MonoBehaviour
 This class gets automatically added to every limb after armor is attached to it. The API by itself comes with ClothingWearer and BodyArmorWearer, which don't do nothing more than the most basic functions they're supposed to do. They also have their own methods as  already stated in  the ArmorBehaviour section
 
 It's a very important part of the ArmorBehaviour, specifically the way that there are different armor flavors like Clothing and Body Armor. This is also the behaviour's weak spot so it's very important that you read this carefully:
