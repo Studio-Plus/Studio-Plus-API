@@ -393,7 +393,7 @@ ModAPI.Register(
         NameOverride = "Blaster Glove" + modTag,
         DescriptionOverride = "It's so inconvinient to hold a blaster anyway",
         CategoryOverride = ModAPI.FindCategory("Entities"),
-        ThumbnailOverride = ModAPI.LoadSprite("Textures/Views/View.png"),
+        ThumbnailOverride = ModAPI.LoadSprite("Textures/Views/Blaster glove view.png"),
         AfterSpawn = (Instance) =>
         {
             Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/Blaster glove.png");
