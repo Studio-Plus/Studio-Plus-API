@@ -13,12 +13,12 @@ namespace Mod
 {
     public class CustomBodyArmorWearer : BodyArmorWearer
     {
-        //This (sort of, sometimes) counts as BodyArmorWearer, meaning that it will not stack with other body armor (that's the theory anyway)
+        //This counts as BodyArmorWearer, meaning that it will not stack with other body armor
         public override void Start()
         {
             base.Start();
             //If you want your armor to do something when spawned, you put it in here. It's important that base.Start(); is included
-            //You don't have to do this though if you won't be changing anything as shown by BodyArmorWearer in StudioPlusAPI.cs
+            //You don't have to add this though if you won't be changing anything as shown by BodyArmorWearer in StudioPlusAPI.cs
         }
     }
 

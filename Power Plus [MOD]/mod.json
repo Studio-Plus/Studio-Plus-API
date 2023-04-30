@@ -1,0 +1,24 @@
+{
+  "Name": "Power Plus",
+  "Author": "Studio Plus",
+  "Description": "Shows what kind of powers humans can possess. \nFunny how resistance is futile nontheless.",
+  "ModVersion": "v1.0.0",
+  "GameVersion": "1.26+",
+  "ThumbnailPath": "Textures/Views/Fire human view.png",
+  "EntryPoint": "Mod.Mod",
+  "Tags": [],
+  "Scripts": [
+      "Code/Main.cs",
+      "Code/Resources.cs",
+      "Code/Behaviours.cs",
+      "StudioPlusAPI/ChemistryPlus.cs",
+      "StudioPlusAPI/TexturePlus.cs",
+      "StudioPlusAPI/CreationPlus.cs",
+      "StudioPlusAPI/PlusAPI.cs",
+      "StudioPlusAPI/ArmorBehaviour.cs",
+      "StudioPlusAPI/PowerPlus.cs"
+    ],
+  "Active": false,
+  "UGCIdentity": null,
+  "CreatorUGCIdentity": null
+}

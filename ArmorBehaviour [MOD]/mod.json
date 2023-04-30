@@ -2,23 +2,31 @@
   "Name": "Armor Behaviour+",
   "Author": "Studio Plus",
   "Description": "A revamped and improved version of ArmorBehaviour. \n(Originally created probably by 'weirdo')",
-  "ModVersion": "v1.0.1",
+  "ModVersion": "v1.1.0",
   "GameVersion": "1.26+",
   "ThumbnailPath": "Textures/Views/Helmet View.png",
   "EntryPoint": "Mod.Mod",
   "Tags": [
     "Functioning Armor",
     "Armor",
-    "Open-Source",
+    "Open Source",
     "Tungsten",
-    "Tungsten Mod"
+    "Tungsten Mod",
+    "StudioPlusAPI",
+    "Studio Plus"
   ],
   "Scripts": [
     "Code/Main.cs",
-    "Code/StudioPlusAPI.cs",
-    "Code/Behaviours.cs"
+    "Code/Resources.cs",
+    "Code/Behaviours.cs",
+    "StudioPlusAPI/ChemistryPlus.cs",
+    "StudioPlusAPI/TexturePlus.cs",
+    "StudioPlusAPI/CreationPlus.cs",
+    "StudioPlusAPI/PlusAPI.cs",
+    "StudioPlusAPI/ArmorBehaviour.cs",
+    "StudioPlusAPI/PowerPlus.cs"
   ],
-  "Active": true,
+  "Active": false,
   "UGCIdentity": null,
   "CreatorUGCIdentity": "2897093610"
 }

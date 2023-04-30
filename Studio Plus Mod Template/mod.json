@@ -1,0 +1,23 @@
+{
+  "Name": "Template",
+  "Author": "Studio Plus",
+  "Description": "This is a Studio Plus template",
+  "ModVersion": "v1.0.0",
+  "GameVersion": "1.26+",
+  "ThumbnailPath": "Textures/Mod/Thumbnail.png",
+  "EntryPoint": "Mod.Mod",
+  "Tags": [],
+  "Scripts": [
+    "Code/Main.cs",
+    "Code/Resources.cs",
+    "StudioPlusAPI/ChemistryPlus.cs",
+    "StudioPlusAPI/TexturePlus.cs",
+    "StudioPlusAPI/CreationPlus.cs",
+    "StudioPlusAPI/PlusAPI.cs",
+    "StudioPlusAPI/ArmorBehaviour.cs",
+    "StudioPlusAPI/PowerPlus.cs"
+  ],
+  "Active": false,
+  "UGCIdentity": null,
+  "CreatorUGCIdentity": null
+}

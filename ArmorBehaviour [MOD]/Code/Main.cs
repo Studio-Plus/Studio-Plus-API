@@ -13,10 +13,21 @@ namespace Mod
 {
     public class Mod
     {
-        public static string tag = " [ArmorB+]";
+        public static string tag = " [Armor+]";
 
         public static void Main()
         {
+            ModAPI.FindSpawnable("Human").Prefab.transform.Find("Head").GetComponent<SpriteRenderer>().sortingLayerName = "Default";
+            ModAPI.FindSpawnable("Android").Prefab.transform.Find("Head").GetComponent<SpriteRenderer>().sortingLayerName = "Default";
+            //Mandatory Studio Plus disclaimer: These 2 things are here so that ArmorBehaviour isn't a mess with head pieces, you're welcome
+            //"Might have some unintended side effects that manifest as unexplainable bugs later"
+            //-zooi
+
+            UniversalAssets.armorProperties = ModAPI.FindPhysicalProperties("Bowling pin");
+            //Fun fact: Only one instance of PhysicalProperties exists for each one of them. Changing them directly through phys.Properties.whatever = 0f; is a disaster.
+            //What this does is make a copy of the Bowling pin properties and stores it for later use to avoid the issue of say making all humans resistant to fire (*cough*, Human Tiers, *cough*).
+            //Writing ModAPI.FindPhyscialProperties() every single time you change properties creates a new copy of them each time, which is a memory leak.
+
             ModAPI.Register(
                 new Modification()
                 {
@@ -31,8 +42,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/ArmorVestUpper.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateArmor("Body/UpperBody", 0.5f);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateBodyArmor(LimbList.upperBody, 0.5f);
                     }
                 }
             );
@@ -51,8 +62,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/ArmorVestMiddle.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateArmor("Body/MiddleBody", 0.5f);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateBodyArmor(LimbList.middleBody, 0.5f);
                     }
                 }
             );
@@ -71,8 +82,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/ArmorVestLower.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateArmor("Body/LowerBody", 0.5f);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateBodyArmor(LimbList.lowerBody, 0.5f);
                     }
                 }
             );
@@ -100,9 +111,9 @@ namespace Mod
                         string middleBody = "Body Armor (Middle Body)" + tag;
                         string lowerBody = "Body Armor (Lower Body)" + tag;
 
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(upperBody), Instance.transform.position + new Vector3(0f, 9f) * ModAPI.PixelSize, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(middleBody), Instance.transform.position, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(lowerBody), Instance.transform.position + new Vector3(0f, -9f) * ModAPI.PixelSize, true);
+                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(upperBody), Instance.transform, new Vector3(0f, 9f) * ModAPI.PixelSize, true);
+                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(middleBody), Instance.transform, Vector3.zero, true);
+                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(lowerBody), Instance.transform, new Vector3(0f, -9f) * ModAPI.PixelSize, true);
 
                         UnityEngine.Object.Destroy(Instance);
                     }
@@ -123,8 +134,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/Helmet.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateArmor("Head", 0.5f, 0);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateBodyArmor(LimbList.head, 0.5f);
                     }
                 }
             );
@@ -144,7 +155,7 @@ namespace Mod
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
                         phys.Properties = ModAPI.FindPhysicalProperties("Glass");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateClothing("Head", 0);
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateClothing(LimbList.head);
                     }
                 }
             );
@@ -165,8 +176,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/Cosmonaut Suit Head.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>("Head", 0.9f, 3);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>(LimbList.head, 0.9f, 3);
                     }
                 }
             );
@@ -185,8 +196,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/Cosmonaut Suit UpperBody.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>("Body/UpperBody", 0.9f, 3);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>(LimbList.upperBody, 0.9f, 3);
                     }
                 }
             );
@@ -205,8 +216,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/Cosmonaut Suit MidBody.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>("Body/MiddleBody", 0.9f, 3);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>(LimbList.middleBody, 0.9f, 3);
                     }
                 }
             );
@@ -225,8 +236,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/Cosmonaut Suit LowerBody.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>("Body/LowerBody", 0.9f, 3);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>(LimbList.lowerBody, 0.9f, 3);
                     }
                 }
             );
@@ -245,8 +256,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/Cosmonaut Suit UpperArmFront.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>("FrontArm/UpperArmFront", 0.9f, 3, 1);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>(LimbList.upperArmFront, 0.9f, 3);
                     }
                 }
             );
@@ -265,8 +276,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/Cosmonaut Suit LowerArmFront.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>("FrontArm/LowerArmFront", 0.9f, 3, 1);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>(LimbList.lowerArmFront, 0.9f, 3);
                     }
                 }
             );
@@ -285,8 +296,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/Cosmonaut Suit UpperArm.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>("BackArm/UpperArm", 0.9f, 3, -1);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>(LimbList.upperArmBack, 0.9f, 3);
                     }
                 }
             );
@@ -305,8 +316,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/Cosmonaut Suit LowerArm.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>("BackArm/LowerArm", 0.9f, 3, -1);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>(LimbList.lowerArmBack, 0.9f, 3);
                     }
                 }
             );
@@ -325,8 +336,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/Cosmonaut Suit UpperLeg.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>("FrontLeg/UpperLegFront", 0.9f, 3, 1);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>(LimbList.upperLegFront, 0.9f, 3);
                     }
                 }
             );
@@ -345,8 +356,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/Cosmonaut Suit LowerLeg.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>("FrontLeg/LowerLegFront", 0.9f, 3, 1);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>(LimbList.lowerLegFront, 0.9f, 3);
                     }
                 }
             );
@@ -365,8 +376,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/Cosmonaut Suit Foot.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>("FrontLeg/FootFront", 0.9f, 3, 1);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>(LimbList.footFront, 0.9f, 3);
                     }
                 }
             );
@@ -385,8 +396,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/Cosmonaut Suit UpperLeg.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>("BackLeg/UpperLeg", 0.9f, 3, -1);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>(LimbList.upperLegBack, 0.9f, 3);
                     }
                 }
             );
@@ -405,8 +416,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/Cosmonaut Suit LowerLeg.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>("BackLeg/LowerLeg", 0.9f, 3, -1);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>(LimbList.lowerLegBack, 0.9f, 3);
                     }
                 }
             );
@@ -425,8 +436,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/Cosmonaut Suit Foot.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>("BackLeg/Foot", 0.9f, 3, -1);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautArmorWearer>(LimbList.footBack, 0.9f, 3);
                     }
                 }
             );
@@ -445,8 +456,8 @@ namespace Mod
                         Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Textures/Entities/Cosmonaut Suit Backpack.png");
                         Instance.FixColliders();
                         var phys = Instance.GetComponent<PhysicalBehaviour>();
-                        phys.Properties = ModAPI.FindPhysicalProperties("Bowling pin");
-                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautBackPackWearer>("Body/UpperBody", 0.9f, 2);
+                        phys.Properties = UniversalAssets.armorProperties;
+                        Instance.GetOrAddComponent<ArmorBehaviour>().CreateCustom<AstronautBackPackWearer>(LimbList.upperBody, 0.9f, 2);
                     }
                 }
             );
@@ -489,27 +500,27 @@ namespace Mod
 
                         string backpack = "Cosmonaut Suit (Backpack)" + tag;
 
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(head), Instance.transform.position, true);
+                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(head), Instance.transform, Vector3.zero, true);
 
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(upperBody), Instance.transform.position, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(middleBody), Instance.transform.position, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(lowerBody), Instance.transform.position, true);
+                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(upperBody), Instance.transform, Vector3.zero, true);
+                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(middleBody), Instance.transform, Vector3.zero, true);
+                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(lowerBody), Instance.transform, Vector3.zero, true);
 
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(upperArmFront), Instance.transform.position, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(lowerArmFront), Instance.transform.position, true);
+                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(upperArmFront), Instance.transform, Vector3.zero, true);
+                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(lowerArmFront), Instance.transform, Vector3.zero, true);
 
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(upperArm), Instance.transform.position, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(lowerArm), Instance.transform.position, true);
+                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(upperArm), Instance.transform, Vector3.zero, true);
+                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(lowerArm), Instance.transform, Vector3.zero, true);
 
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(frontLegFront), Instance.transform.position, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(lowerLegFront), Instance.transform.position, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(footFront), Instance.transform.position, true);
+                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(frontLegFront), Instance.transform, Vector3.zero, true);
+                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(lowerLegFront), Instance.transform, Vector3.zero, true);
+                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(footFront), Instance.transform, Vector3.zero, true);
+                            
+                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(frontLeg), Instance.transform, Vector3.zero, true);
+                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(lowerLeg), Instance.transform, Vector3.zero, true);
+                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(foot), Instance.transform, Vector3.zero, true);
 
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(frontLeg), Instance.transform.position, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(lowerLeg), Instance.transform.position, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(foot), Instance.transform.position, true);
-
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(backpack), Instance.transform.position, true);
+                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(backpack), Instance.transform, Vector3.zero, true);
 
                         UnityEngine.Object.Destroy(Instance);
                     }

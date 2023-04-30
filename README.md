@@ -1,16 +1,19 @@
 # Studio-Plus-API
-## Current Version: v2.0.0
+## Current Version: v3.0.0
 This is an API for mods created by Studio Plus, open source because stuff like this should be open source.
 
-Code snippets will be added in for all of the stuff within the API but this was created in a semi-rush to upload the files of ArmorBehaviour+ so I still have to add that in.
-
-It should be noted that there are 2 types of snippets I'll add in: [MOD] and [SNIPPET]:
+There are 2 types of snippets in here:
 - [MOD] is an actual mod that you can throw into your mods folder
-- [SNIPPET] is either a file or group of files that would not work as a mod on their own without you doing something to make it work.
+- [SNIPPET] is either a file or group of files that would not work as a mod on their own without you doing something to make it work.<br/>
+  Those are mostly now redundant however thanks to the documentary
 
 ### How do I use it?
-- Put the file in your mod folder and add it to the list in mod.json
-- Add 'using StudioPlusAPI;' at the start of each file.
-- There are a few sub-APIs within the API itself: ChemistryPlus, TextruePlus, CreationPlus and PlusAPI (misc stuff). Use them accordingly as shown in examples.
+1. Download the 'StudioPlusAPI' folder and put it into your mod root folder (You can put the files wherever, but I personally would do this and the further instructions will also assume you did this. If you put the files somewhere else, you have to adjust to it)
+2. Add all the file paths into your mod.json file (There is an example of that in the repository)
+3. Add 'using StudioPlusAPI;' to the beginning of each file, the same area where 'using UnityEngine;' is
 
-In case of any issues, please join the studio plus server: https://discord.gg/MxY3n6wfjw
+Alternatively you can just use the template included in the repository and skip to step 3 for any files you add (files in the template have step 3 completed by default)
+
+For everything else, check the documentary to get started!
+
+In case of any issues or questions, please join the [Studio Plus Server](https://discord.gg/MxY3n6wfjw).
