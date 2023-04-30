@@ -26,3 +26,4 @@ obj/Debug/StudioPlusAPI.csproj.CoreCompileInputs.cache
 .vs/StudioPlusAPI/FileContentIndex/29262b5e-bd84-45c4-8841-12b194ca0c3f.vsidx
 .vs/StudioPlusAPI/FileContentIndex/277af359-457d-47c6-8029-08be8f95da8d.vsidx
 .vs/StudioPlusAPI/FileContentIndex/6f654274-fce3-4550-8eed-2f1f2bbeb6c8.vsidx
+*.vsidx

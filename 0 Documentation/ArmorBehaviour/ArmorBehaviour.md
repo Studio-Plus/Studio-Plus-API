@@ -12,7 +12,7 @@ public void CreateBodyArmor(string newLimbType, float newStabResistance)
 
 public void CreateClothing(string newLimbType)
 ```
-For clothing you simply have to provide the string of the limb path in the transform hierarchy. For this you can simply use LimbList (See documentary on LimbList).<br/>
+For clothing you simply have to provide the string of the limb path in the transform hierarchy. For this you can simply use LimbList (See documentation on LimbList).<br/>
 For body armor however, you also must provide a stab resistance. This value is clamped between 0 and 1, where 0 means no protection and 1 means full protection. If it's set to 0.75f, there is a 75% chance that the armor will be protected from being stabbed, so 25% chance that human will be stabbed. It's purely based on chance instead of taking factors like velocity into account. I do realize this. Some might consider me lazy for writing this like that, in which case they're right. I was lazy when writing this. I might or might not fix it in a future update to the API.<br/>
 For clothing, stab resistance is always 0.
 
@@ -30,7 +30,7 @@ Also, it's very important that ArmorBehaviour must be added via GetOrAddComponen
 Instance.GetOrAddComponent<ArmorBehaviour>().CreateBodyArmor(LimbList.head, 0.5f);
 ```
 
-To end this boring documentary entry, here is a full example of an armor piece being created from ArmorBehaviour [MOD]:
+To end this boring documentation entry, here is a full example of an armor piece being created from ArmorBehaviour [MOD]:
 ```cs
 ModAPI.Register(
     new Modification()

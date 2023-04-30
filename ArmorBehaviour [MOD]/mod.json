@@ -4,7 +4,7 @@
   "Description": "A revamped and improved version of ArmorBehaviour. \n(Originally created probably by 'weirdo')",
   "ModVersion": "v1.1.0",
   "GameVersion": "1.26+",
-  "ThumbnailPath": "Textures/Views/Helmet View.png",
+  "ThumbnailPath": "Textures/Mod/Thumbnail.png",
   "EntryPoint": "Mod.Mod",
   "Tags": [
     "Functioning Armor",
