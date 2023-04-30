@@ -1,4 +1,4 @@
-# StudioPlusAPI DOCUMENTATION
+# StudioPlusAPI DOCUMENTATION (v3.0.0)
 ## ChemistryPlus
 ### AddLiquidToItem() 
 This method allows to add a liquid to an already existing item. Contains 2 overloads.<br/>
