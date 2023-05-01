@@ -60,6 +60,7 @@ It is not possible to mix e.g. 4 liquids into 2 with 1 API method, although it s
 ### Liquid ID List (for v1.26.6)
 When working with specific liquids in general, you should use a reference to the liquid class ID string instead of a plain string to avoid zooi's changes to any names causing your mods to break<br/>
 This will be a list of every single liquid ID in people playground. This will also serve as a list of every Liquid class in the game.
+<!-- How did they get access to our MLC list? -->
 #### Regular liquids
 1. Blood.ID
 1. GorseBlood.ID
@@ -85,6 +86,7 @@ This will be a list of every single liquid ID in people playground. This will al
 1. Chemistry.BeverageM04.ID
 1. PainKillerSyringe.PainKillerLiquid.ID
 
+<!-- What are our proceedings Mr. Johnson? -->
 #### Pink Liquids
 1. PinkSyringe.PinkDormantLiquid.ID
 1. PinkSyringe.VestibularPoison.ID
@@ -103,6 +105,7 @@ This will be a list of every single liquid ID in people playground. This will al
 1. PinkSyringe.TissueDeconstructionAgent.ID
 1. PinkSyringe.MuscleEnhancementSerum.ID
 
+<!-- Oh whatever, the public knows about all of those anyway -->
 #### Inaccessible liquids
 - Gasoline.ID
 - Chemistry.DebugDiscolorationLiquid.ID
