@@ -19,91 +19,157 @@ namespace StudioPlusAPI
     public abstract class PowerPlus : MonoBehaviour
     {
         [SkipSerialisation]
-        protected LimbBehaviour limb;
+        public LimbBehaviour Limb { get; protected set; }
         [SkipSerialisation]
-        protected PersonBehaviour person;
+        public PersonBehaviour Person { get; protected set; }
         [SkipSerialisation]
-        public List<MonoBehaviour> abilities = new List<MonoBehaviour>();
-        protected bool powerCreated = false;
-        protected bool powerEnabled = false;
-        protected bool abilityEnabled = false;
+        public List<Ability> abilities = new List<Ability>();
+        public bool PowerEnabled { get; protected set; } = false;
+        public bool AbilityEnabled { get; protected set; } = false;
 
-        //This is very much a scaffolding, but a useful one
+        public bool PowerActive { get; protected set; } = false;
+        public bool AbilityActive { get; protected set; } = false;
+
 
         protected virtual void Awake()
         {
-            limb = GetComponent<LimbBehaviour>();
-            person = limb.Person;
+            Limb = GetComponent<LimbBehaviour>();
+            Person = Limb.Person;
         }
 
         protected virtual void Start()
         {
-            CreatePower();
+            CreatePowerInt();
         }
 
         protected virtual void FixedUpdate()
         {
-            if (limb.Person.Consciousness < 0.8f && abilityEnabled)
-                ToggleAbility(false);
-            else if (limb.Person.Consciousness >= 0.8f && !abilityEnabled && powerEnabled)
-                ToggleAbility(true);
+            if (!PowerActive && !AbilityActive)
+                return;
 
-            if (!person.transform.Find(LimbList.head).GetComponent<LimbBehaviour>().IsConsideredAlive && powerEnabled)
-                TogglePower(false);
-            else if (person.transform.Find(LimbList.head).GetComponent<LimbBehaviour>().IsConsideredAlive && !powerEnabled)
-                TogglePower(true);
+            if (AbilityActive)
+            {
+                if (Person.Consciousness < 0.8f && AbilityEnabled)
+                    ToggleAbilityInt(false);
+                else if (Person.Consciousness >= 0.8f && !AbilityEnabled && PowerEnabled)
+                    ToggleAbilityInt(true);
+            }
+
+            if (PowerActive)
+            {
+                if (!Person.transform.Find(LimbList.head).GetComponent<LimbBehaviour>().IsConsideredAlive && PowerEnabled)
+                    TogglePowerInt(false);
+                else if (Person.transform.Find(LimbList.head).GetComponent<LimbBehaviour>().IsConsideredAlive && !PowerEnabled)
+                    TogglePowerInt(true);
+            }
         }
 
         protected void OnDestroy()
         {
+            foreach (Ability ability in abilities)
+            {
+                Destroy(ability);
+            }
             DeletePower();
         }
 
         //This method adds everything to the entity, like light sprites, strength, ability classes, etc.
-        protected virtual void CreatePower()
+        protected void CreatePowerInt()
         {
-            powerCreated = true;
+            PowerActive = true;
+            AbilityActive = true;
             Debug.Log("Power created!");
-        }
-
-        //This class turns *abilities* on or off. Main use for when the one with power is knocked unconcsious
-        public virtual void ToggleAbility(bool toggle)
-        {
-            //Use this as the basis of the toggle
-            switch (toggle)
-            {
-                case true:
-                    abilityEnabled = true;
-                    Debug.Log("Abilities Enabled!");
-                    break;
-                case false:
-                    abilityEnabled = false;
-                    Debug.Log("Abilities Disabled!");
-                    break;
-            }
+            CreatePower();
         }
 
         //This class turns *the power* on or off, as if the power was never there. Main use for when the one with power is killed, but so he can still be revived.
-        public virtual void TogglePower(bool toggle)
+        protected void TogglePowerInt(bool toggled)
         {
-            //Use this as the basis of the toggle
-            switch (toggle)
+            switch (toggled)
             {
                 case true:
-                    powerEnabled = true;
+                    PowerEnabled = toggled;
                     Debug.Log("Power Enabled!");
                     break;
                 case false:
-                    powerEnabled = false;
-                    Debug.Log("Power Disabled!");
+                    PowerEnabled = toggled;                  
+                    Debug.Log("Power Disabled!");                   
                     break;
+            }
+            TogglePower(toggled);
+            ToggleAbilityInt(toggled);
+        }
+
+        //This class turns *abilities* on or off. Main use for when the one with power is knocked unconcsious
+        protected void ToggleAbilityInt(bool toggled)
+        {
+            switch (toggled)
+            {
+                case true:
+                    AbilityEnabled = toggled;
+                    foreach (Ability ability in abilities)
+                    {
+                        ability.enabled = toggled;
+                    }
+                    Debug.Log("Abilities Enabled!");
+                    break;
+                case false:
+                    AbilityEnabled = toggled;
+                    foreach (Ability ability in abilities)
+                    {
+                        ability.enabled = toggled;
+                    }
+                    Debug.Log("Abilities Disabled!");
+                    break;
+            }
+            ToggleAbility(toggled);
+        }
+
+        protected abstract void CreatePower();
+
+        protected abstract void TogglePower(bool toggled);
+
+        protected abstract void ToggleAbility(bool toggled);
+
+        protected abstract void DeletePower();
+
+        public void ForceTogglePower(bool toggled)
+        {
+            PowerActive = toggled;
+            AbilityActive = toggled;
+            TogglePowerInt(toggled);
+        }
+
+        public void ForceToggleAbility(bool toggled)
+        {
+            AbilityActive = toggled;
+            ToggleAbilityInt(toggled);
+        }
+    }
+
+    public abstract class Ability : MonoBehaviour
+    {
+        [SkipSerialisation]
+        public LimbBehaviour Limb { get; protected set; }
+        [SkipSerialisation]
+        public PersonBehaviour Person { get; protected set; }
+
+        protected void Awake()
+        {
+            Limb = GetComponent<LimbBehaviour>();
+            Person = Limb.Person;
+        }
+
+        public virtual void FixedUpdate()
+        {
+            if (!Limb.NodeBehaviour.IsConnectedToRoot && enabled)
+            {
+                enabled = false;
             }
         }
 
-        protected virtual void DeletePower()
-        {
+        public abstract void OnEnable();
 
-        }
+        public abstract void OnDisable();
     }
 }
-

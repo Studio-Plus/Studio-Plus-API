@@ -1,4 +1,4 @@
-# StudioPlusAPI DOCUMENTATION (v3.0.0)
+# StudioPlusAPI DOCUMENTATION (v3.1.0)
 ## ChemistryPlus
 ### AddLiquidToItem() 
 This method allows to add a liquid to an already existing item. Contains 2 overloads.<br/>
@@ -481,7 +481,13 @@ Wihle this is longer than what we started with, the overload actually allows us 
 ```cs
 var lowerArmFront = LimbList.FindLimb(Instance, LimbList.lowerArmFront);
 ```
-Now it is just a bit longer with the benefit of being more straight forward in this example
+Now it is just a bit longer with the benefit of being more straight forward in this example.
+
+In addition, the method will always look for the root of the transform first before looking for the limb, so writing
+```cs
+LimbList.FindLimb(limb.transform, LimbList.lowerArmFront);
+```
+is just as valid as limb.transform.root!
 
 ## ArmorBehaviour (REQUIRES CreationPlus and PlusAPI)
 ### public class ArmorBehaviour : MonoBehaviour
@@ -565,15 +571,21 @@ namespace Mod
 ```
 While this is not the perfect solution like zooi mentioned, I can finally sleep peacefully at night, knowing that one of the biggest failures of this API has been corrected.
 
-#### ???
-Not sure what else I could add. I could go over the other 157 lines of code detailing how the Armor works and interacts with the world, but not sure if that's really needed.
-
-Well I can at least tell you how Armor collides with Other Armor. Basically, if:
+#### Armor collision (with other armor)
+Basically, when you got an armor piece "Armor" and another armor piece "Other Armor" and:
 - Other Armor is of the same type as Armor
 - Other Armor connects to the same limb as Armor
 - Armor is equipped
 
-The armor pieces will not collide. The last condition is in place to make placing armor on an entity that already has armor easier.
+The armor pieces won't collide. The last condition is in place to make attaching armor on an entity that already has armor easier.
+
+#### ArmorBehaviour.Equipped
+Important property of the class. Returns true when armor is attached to a limb and returns false 5 seconds after detached.<br/>
+An armor piece can only be equipped by an entity if Equipped is false.
+
+#### ArmorBehaviour.IsAttached
+Another important property of the class. It returns true when armor is attached, but unlike Equipped, returns false immediately when armor is detached.<br/>
+It could have some specific uses for you, the modder, which is why it's in the API, because otherwise it is not used by the ArmorBehaviour class itself.
 
 ### public abstract class ArmorWearer : MonoBehaviour
 This class gets automatically added to every limb after armor is attached to it. The API by itself comes with ClothingWearer and BodyArmorWearer, which don't do nothing more than the most basic functions they're supposed to do. They also have their own methods as  already stated in  the ArmorBehaviour section
@@ -623,5 +635,287 @@ public class BlasterGloveWearer : BodyArmorWearer
 ```
 
 ## PowerPlus (PlusAPI HIGHLY recommended)
-### Missing
-In order to finally get this update out, this was temporarily skipped. it will be put in later. For now you have to figure it out with the Power Plus [Mod] source code.
+### public abstract class PowerPlus : MonoBehaviour
+Allows you to gift humans with power.<br/>
+This class is a beautiful and perfect mesh of being simple for you, the modder, to use, yet also being the most advanced piece of code I've written up to date, so this documentation will be split into 2 parts:
+- How to use?
+- How does it work?
+
+#### How to use?
+So first you must know that there are 3 protected virtual methods in this class (That is, methods that you're allowed to override in your subclass).
+```cs
+protected virtual void Awake()
+
+protected virtual void Start()
+
+protected virtual void FixedUpdate()
+```
+It's important to get that out of the way because I will be mentioning them throughout this section of the documentation
+
+The class is abstract because you must make a subclass for it, and it contains 4 abstract methods that you have to override:
+```cs
+protected abstract void CreatePower();
+
+protected abstract void TogglePower(bool toggled);
+
+protected abstract void ToggleAbility(bool toggled);
+
+protected abstract void DeletePower();
+```
+- **CreatePower()** is called when the class is first added by default in the Start() method. If you don't wish for the power to be immediately added when created, override Start() without adding base.Start() anywhere.<br/> 
+  Within it you should add things like creating any light sprites, adding immunities or abilities (See Ability documentation), etc., basically anything meant to be permanent.<br/>
+  Here is an example from PowerPlus [MOD]:
+  ```cs
+  protected override void CreatePower()
+  {
+  foreach (var limbs in Person.Limbs)
+  {
+      var phys = limbs.PhysicalBehaviour;
+
+      limbs.DiscomfortingHeatTemperature = float.PositiveInfinity;
+      phys.SimulateTemperature = false;
+
+      phys.Properties = UniversalAssets.fireHumanProperties;
+  }
+
+  TexturePlus.CreateLightSprite(
+      eyeLight = new GameObject("Light"),
+      Limb.transform.root.transform.Find(LimbList.head),
+      UniversalAssets.eyeLight,
+      new Vector2(2.5f, 1.5f) * ModAPI.PixelSize,
+      powerColor,
+      eyeGlow = TexturePlus.InstantiateLight(eyeLight.transform)
+  );
+  eyeLight.SetActive(eyeActive);
+
+  abilities.Add(LimbList.FindLimb(Limb.transform.root, LimbList.lowerArmFront).gameObject.GetOrAddComponent<FireTouch>());
+  abilities.Add(LimbList.FindLimb(Limb.transform.root, LimbList.lowerArmBack).gameObject.GetOrAddComponent<FireTouch>());
+        }
+  ```
+- **TogglePower(bool toggle)** toggles the power as a whole. In this state, the human should look as if he has no powers (ignoring e.g. immunities, but that's up to you to decide). **Calls ToggleAbility(bool toggle) by default.**
+  For Fire Human from Power Plus [MOD] it simply disables eye glow:
+  ```cs
+  protected override void TogglePower(bool toggled)
+  {
+      eyeLight.SetActive(toggled);
+      eyeActive = toggled;
+  }
+  ```
+- **ToggleAbility(bool toggle)** toggles ability instead. The class itself deals with this function rather effectively, so the toggle of abilities should be limited to the Ability class (See documentation on Ability). That is the case for Fire Human Power, which is why no example can be provided
+- **DeletePower()** is called when the class is removed. Should undo everything that CreatePower() does. If your power is not meant to be removable in that way, you don't have to add anything to it.
+
+There are also 2 additional classes that you should know about:
+```cs
+public void ForceTogglePower(bool toggled)
+
+public void ForceToggleAbility(bool toggled)
+```
+So like the name implies, it forces Powers or Abilities to be toggled on and off right? Well, sort of.<br/>
+When you toggle Power/Abilities to false by this method, they will be permanently disabled without considering the Power & Ability Toggle Conditions (More about that later). However when toggled to true by this method, it will enable it once and then subject it to the previously mentioned Power & Ability Toggle Conditions, so you will have to use this method with that in mind.<br/> 
+Here is a quick example of it being taken in mind correctly:
+```cs
+public void Use(ActivationPropagation a)
+{
+    if (PowerActive)
+        ForceTogglePower(false); //If Power is toggled on, toggle it off
+    else if (Person.transform.Find(LimbList.head).GetComponent<LimbBehaviour>().IsConsideredAlive)
+        ForceTogglePower(true); //If Power is toggled off and Entity with power is still alive, re-enable powers
+    else return;
+}
+```
+
+#### How does it work?
+I will just go over every method that does not relate to 'how to use' here:
+
+##### protected virtual void Awake()
+Defines the following properties thusly:
+```cs
+/* earlier...
+public LimbBehaviour Limb { get; protected set; }
+public PersonBehaviour Person { get; protected set; }
+*/
+protected virtual void Awake()
+{
+    Limb = GetComponent<LimbBehaviour>();
+    Person = Limb.Person;
+}
+```
+
+##### protected virtual void Start()
+Calls PowerCreateInt()<br/>
+Woah hold on! What the heck is PowerCreateInt()? Just give me a moment okay?
+
+##### protected virtual void FixedUpdate()
+Contains the so-called "Power & Abilities Toggle Conditions".<br/>
+Here they are!
+```cs
+if (!PowerActive && !AbilityActive)
+    return;
+
+if (AbilityActive)
+{
+    if (Person.Consciousness < 0.8f && AbilityEnabled)
+        ToggleAbilityInt(false);
+    else if (Person.Consciousness >= 0.8f && !AbilityEnabled && PowerEnabled)
+        ToggleAbilityInt(true);
+}
+
+if (PowerActive)
+{
+    if (!Person.transform.Find(LimbList.head).GetComponent<LimbBehaviour>().IsConsideredAlive && PowerEnabled)
+        TogglePowerInt(false);
+    else if (Person.transform.Find(LimbList.head).GetComponent<LimbBehaviour>().IsConsideredAlive && !PowerEnabled)
+        TogglePowerInt(true);
+}
+```
+I'll quickly summarize it in  wors here:
+
+If both Power And Abilities are toggled off, do nothing
+
+
+Else, if Ability is toggled on:
+- If person is unconscious and Ability wasn't disabled yet, disable them
+- Else if person is conscious and Ability wasn't enabled yet and Power is enabled, enable them
+
+If Power is toggled on:
+- If the head is dead and power wasn't disabled yet, disable it.
+- Else if the head is alive and power wasn't enabled yet, enable it.
+
+##### protected void CreatePowerInt(), protected void TogglePowerInt(), protected void ToggleAbilityInt()
+We finally get to these guys. 'Int' here stands for 'Internal', and that's because this is the stuff that happens internally in the class. Crazy naming, right?<br/>
+They do the necessary behind-the-scenes stuff to make those methods work and is what's actually called every time power is made or toggled. The things that you put into the abstract classes get executed by the Internal classes though so don't worry.
+
+The details of how they exactly work and what they do is kinda boring and unnecessary, say for one:
+```cs
+//This class turns *abilities* on or off. Main use for when the one with power is knocked unconcsious
+protected void ToggleAbilityInt(bool toggled)
+{
+    switch (toggled)
+    {
+        case true:
+            AbilityEnabled = toggled;
+            foreach (Ability ability in abilities)
+            {
+                ability.enabled = toggled;
+            }
+            Debug.Log("Abilities Enabled!");
+            break;
+        case false:
+            AbilityEnabled = toggled;
+            foreach (Ability ability in abilities)
+            {
+                ability.enabled = toggled;
+            }
+            Debug.Log("Abilities Disabled!");
+            break;
+    }
+    ToggleAbility(toggled);
+}
+```
+As you can see, the ToggleAbilityInt on its own changes the enabled variable in the Ability class. This is acknowledged in the Ability class itself and is meant to be the way you handle toggling powers on and off. (See Ability Documentation)
+
+### public abstract class Ability : MonoBehaviour
+This is a class for all abilities added by PowerPlus class.
+
+To start, PowerPlus class has a list of abilities:
+```cs
+public List<Ability> abilities = new List<Ability>();
+```
+These should be added in the abstract method **CreatePower()**, preferably at the end of said method, like here:
+```cs
+protected override void CreatePower()
+{
+    //Other code here...
+
+    abilities.Add(LimbList.FindLimb(Limb.transform, LimbList.lowerArmFront).gameObject.GetOrAddComponent<FireTouch>());
+    abilities.Add(LimbList.FindLimb(Limb.transform, LimbList.lowerArmBack).gameObject.GetOrAddComponent<FireTouch>());
+}
+```
+It's important that you do it like that by finding the appropriate limb then adding the Ability via GetOrAddComponent to make it work.
+
+To spare the explaining of every method (and because the class is short enough) I will put it here as reference:
+```cs
+public abstract class Ability : MonoBehaviour
+{
+    [SkipSerialisation]
+    public LimbBehaviour Limb { get; protected set; }
+    [SkipSerialisation]
+    public PersonBehaviour Person { get; protected set; }
+
+    protected void Awake()
+    {
+        Limb = GetComponent<LimbBehaviour>();
+        Person = Limb.Person;
+    }
+
+    public virtual void FixedUpdate()
+    {
+        if (!Limb.NodeBehaviour.IsConnectedToRoot && enabled)
+        {
+            enabled = false;
+        }
+    }
+
+    public abstract void OnEnable();
+
+    public abstract void OnDisable();
+}
+```
+As you can see, like PowerPlus it has Limb and Person and immediately assigns values for them.<br/>
+It also contains the last of Power & Abilities Toggle Conditions: When the limb is separated from the body, it disables the class.
+
+The class works the way it works mostly because of that 1 line of code.<br/>
+It also contains the 2 absract methods OnEnable() and OnDisable(), in which you should define what happens when this ability is toggled on and off respectively.
+
+Note that enabled simply being set to false doesn't automatically make other behaviours of the class stop, so you will have to adjust whatever you write with that in mind:
+```cs
+public class FireTouch : Ability
+{
+    [SkipSerialisation]
+    public GameObject armLight;
+    [SkipSerialisation]
+    public LightSprite armGlow;
+    [SkipSerialisation]
+    public Color powerColor = new Color32(255, 127, 0, 31);
+
+    public void Start()
+    {
+        TexturePlus.CreateLightSprite(
+            armLight = new GameObject("ArmLight"),
+            transform,
+            UniversalAssets.powerLight,
+            Vector2.zero,
+            powerColor,
+            armGlow = TexturePlus.InstantiateLight(armLight.transform),
+            5f,
+            0.75f
+        );
+    }
+
+    public void OnCollisionEnter2D(Collision2D other)
+    {
+        if (enabled && gameObject.GetComponent<Rigidbody2D>().velocity.magnitude >= 1f) //If statement must check if enabled is true or else this will trigger regardless of whether the ability is toggled on or off
+        {
+            var phys = other.transform.GetComponent<PhysicalBehaviour>();
+            phys.Temperature += 200f;
+            phys.Ignite();
+            if (phys.OnFire)
+            {
+                phys.BurnIntensity = 1f;
+            }
+        }
+    }
+
+    public override void OnEnable()
+    {
+        //This question mark ensures that this is only run if armLight isn't null to ensure no NullReferenceException errors
+        armLight?.SetActive(true);
+    }
+
+    public override void OnDisable()
+    {
+        //Same here
+        armLight?.SetActive(false);
+    }
+    }
+```

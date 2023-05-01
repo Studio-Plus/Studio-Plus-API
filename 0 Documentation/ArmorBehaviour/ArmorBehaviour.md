@@ -81,12 +81,18 @@ namespace Mod
 ```
 While this is not the perfect solution like zooi mentioned, I can finally sleep peacefully at night, knowing that one of the biggest failures of this API has been corrected.
 
-#### ???
-Not sure what else I could add. I could go over the other 157 lines of code detailing how the Armor works and interacts with the world, but not sure if that's really needed.
-
-Well I can at least tell you how Armor collides with Other Armor. Basically, if:
+#### Armor collision (with other armor)
+Basically, when you got an armor piece "Armor" and another armor piece "Other Armor" and:
 - Other Armor is of the same type as Armor
 - Other Armor connects to the same limb as Armor
 - Armor is equipped
 
-The armor pieces will not collide. The last condition is in place to make placing armor on an entity that already has armor easier.
+The armor pieces won't collide. The last condition is in place to make attaching armor on an entity that already has armor easier.
+
+#### ArmorBehaviour.Equipped
+Important property of the class. Returns true when armor is attached to a limb and returns false 5 seconds after detached.<br/>
+An armor piece can only be equipped by an entity if Equipped is false.
+
+#### ArmorBehaviour.IsAttached
+Another important property of the class. It returns true when armor is attached, but unlike Equipped, returns false immediately when armor is detached.<br/>
+It could have some specific uses for you, the modder, which is why it's in the API, because otherwise it is not used by the ArmorBehaviour class itself.

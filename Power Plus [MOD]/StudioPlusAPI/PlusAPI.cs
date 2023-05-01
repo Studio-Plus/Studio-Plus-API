@@ -73,12 +73,12 @@ namespace StudioPlusAPI
 
         public static Transform FindLimb(Transform transform, string limbType)
         {
-            return transform.Find(limbType);
+            return transform.root.Find(limbType);
         }
 
         public static Transform FindLimb(GameObject gameObject, string limbType)
         {
-            return gameObject.transform.Find(limbType);
+            return gameObject.transform.root.Find(limbType);
         }
     }
 }

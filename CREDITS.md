@@ -1,6 +1,6 @@
 # CREDITS
 
-## VERSION: v3.0.0
+## VERSION: v3.1.0
 
 ## DIRECTORS
 - Main Director - Dawid23_Gamer [S+, LD]

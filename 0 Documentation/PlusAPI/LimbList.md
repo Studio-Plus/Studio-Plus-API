@@ -54,4 +54,10 @@ Wihle this is longer than what we started with, the overload actually allows us 
 ```cs
 var lowerArmFront = LimbList.FindLimb(Instance, LimbList.lowerArmFront);
 ```
-Now it is just a bit longer with the benefit of being more straight forward in this example
+Now it is just a bit longer with the benefit of being more straight forward in this example.
+
+In addition, the method will always look for the root of the transform first before looking for the limb, so writing
+```cs
+LimbList.FindLimb(limb.transform, LimbList.lowerArmFront);
+```
+is just as valid as limb.transform.root!

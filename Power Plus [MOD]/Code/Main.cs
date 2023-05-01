@@ -27,7 +27,16 @@ namespace Mod
             UniversalAssets.gloveLight = ModAPI.LoadSprite("Textures/Entities/Blaster glove light.png");
             UniversalAssets.powerLight = ModAPI.LoadSprite("Textures/Entities/Power light.png");
             UniversalAssets.eyeLight = ModAPI.LoadSprite("Textures/Entities/Eye light.png");
+
             UniversalAssets.humanProperties = ModAPI.FindPhysicalProperties("Human");
+
+            //Each time ModAPI.FindPhysicalProperties is written, a copy of said property is made. Each unique PhysicalProperty you want to make, whether that be of a fire resistant human,
+            //of a new sharp object or whatever else where you modify said properties, they should be declared similarly to how they're declared here. Any change I make to
+            //UniversalAssets.fireHumanProperties for example will apply to every single entity spawned after said change is made.
+            UniversalAssets.fireHumanProperties = ModAPI.FindPhysicalProperties("Human");
+            UniversalAssets.fireHumanProperties.Flammability = 0f;
+            UniversalAssets.fireHumanProperties.Burnrate = 0f;
+            UniversalAssets.fireHumanProperties.BurningTemperatureThreshold = float.PositiveInfinity;
 
             ModAPI.Register(
                 new Modification()

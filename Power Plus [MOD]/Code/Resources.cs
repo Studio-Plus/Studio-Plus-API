@@ -17,6 +17,7 @@ namespace Mod
         public static Sprite powerLight;
         public static Sprite eyeLight;
         public static PhysicalProperties humanProperties;
+        public static PhysicalProperties fireHumanProperties;
     }
 
     public class BackgroundScript : MonoBehaviour

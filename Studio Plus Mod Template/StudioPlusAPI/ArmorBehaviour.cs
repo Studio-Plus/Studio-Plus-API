@@ -25,14 +25,14 @@ namespace StudioPlusAPI
         [SkipSerialisation]
         protected float stabResistance;
         [SkipSerialisation]
-        protected int armorSortingOrder;
-        protected bool equipped = false; //This one is not accessible and is turned false 5 seconds after detachment
-        public bool isAttached = false; //This one is accessible and is turned false immediately after detachment
-        //Why the names like this? Can't be changed cuz serialisation.
+        protected int armorSortingOrder;      
         protected Collider2D[] limbColliders;
         protected List<Collider2D> otherArmorColliders = new List<Collider2D>();
         protected GameObject attachedLimb;
         protected Type armorWearerType;
+        public bool Equipped { get; protected set; } = false; //This one is not accessible and is turned false 5 seconds after detachment
+        public bool IsAttached { get; protected set; } = false; //This one is accessible and is turned false immediately after detachment
+        //Why the names like this? Am I stupid? Yes, but can't be changed cuz serialisation.
 
         public void CreateBodyArmor(string newLimbType, float newStabResistance)
         {
@@ -69,7 +69,7 @@ namespace StudioPlusAPI
             phys = GetComponent<PhysicalBehaviour>();
             phys.ContextMenuOptions.Buttons.Add(
                 new ContextMenuButton(
-                    () => equipped,
+                    () => Equipped,
                     "detachArmor",
                     "Detach armor",
                     "Detach multiple armor pieces",
@@ -91,7 +91,7 @@ namespace StudioPlusAPI
                     break; 
                 }
                 var armorPiece = collider.gameObject.GetComponent<ArmorBehaviour>();
-                if (equipped || IsSameType(armorPiece.armorWearerType, armorWearerType) || limbType == armorPiece.limbType)
+                if (Equipped || IsSameType(armorPiece.armorWearerType, armorWearerType) || limbType == armorPiece.limbType)
                     PlusAPI.IgnoreCollision(GetComponent<Collider2D>(), collider, true);
                 else
                 {
@@ -102,7 +102,7 @@ namespace StudioPlusAPI
 
         protected void OnCollisionEnter2D(Collision2D collision)
         {
-            if (collision.transform.TryGetComponent(out LimbBehaviour limb) && !equipped)
+            if (collision.transform.TryGetComponent(out LimbBehaviour limb) && !Equipped)
             {
                 foreach (var armorWearer in limb.transform.root.Find(limbType).gameObject.GetComponents<ArmorWearer>())
                 {
@@ -118,7 +118,7 @@ namespace StudioPlusAPI
             }
             else
             {
-                if (UnityEngine.Random.value > stabResistance && equipped && collision.transform.GetComponent<PhysicalBehaviour>().Properties.Sharp)
+                if (UnityEngine.Random.value > stabResistance && Equipped && collision.transform.GetComponent<PhysicalBehaviour>().Properties.Sharp)
                 {
                     GetComponent<Collider2D>().isTrigger = true;
                 }
@@ -133,8 +133,8 @@ namespace StudioPlusAPI
         public void Attach(GameObject limbObject)
         {
             phys = GetComponent<PhysicalBehaviour>();
-            isAttached = true;
-            equipped = true;
+            IsAttached = true;
+            Equipped = true;
             attachedLimb = limbObject;
             GetComponent<SpriteRenderer>().sortingLayerName = attachedLimb.GetComponent<SpriteRenderer>().sortingLayerName;
             GetComponent<SpriteRenderer>().sortingOrder = attachedLimb.GetComponent<SpriteRenderer>().sortingOrder + armorSortingOrder;
@@ -145,7 +145,7 @@ namespace StudioPlusAPI
             ArmorWearer armorWearer = attachedLimb.AddComponent(armorWearerType) as ArmorWearer;
             armorWearer.armorExists = true;
             armorWearer.armorName = transform.root.gameObject.name;
-            armorWearer.armorObject = this;
+            armorWearer.ArmorObject = this;
 
             transform.SetParent(attachedLimb.transform);
             GetComponent<Rigidbody2D>().isKinematic = true;
@@ -166,7 +166,7 @@ namespace StudioPlusAPI
 
         public void Detach()
         {
-            isAttached = false;
+            IsAttached = false;
             GetComponent<SpriteRenderer>().sortingLayerName = "Default";
             GetComponent<SpriteRenderer>().sortingOrder = 0;
             Destroy(GetComponent<FixedJoint2D>());
@@ -192,7 +192,7 @@ namespace StudioPlusAPI
                 }
                 attachedLimb = null;
             }
-            equipped = false;
+            Equipped = false;
 
         }
 
@@ -206,7 +206,7 @@ namespace StudioPlusAPI
     public abstract class ArmorWearer : MonoBehaviour
     {
         [SkipSerialisation]
-        public ArmorBehaviour armorObject;
+        public ArmorBehaviour ArmorObject { get; protected internal set; }
         protected internal bool armorExists = false;
         protected internal string armorName;
 
@@ -217,7 +217,7 @@ namespace StudioPlusAPI
             else
             {
                 var newArmorObject = CreationPlus.SpawnItem(ModAPI.FindSpawnable(armorName), transform);
-                armorObject = newArmorObject.GetComponent<ArmorBehaviour>();
+                ArmorObject = newArmorObject.GetComponent<ArmorBehaviour>();
                 Destroy(this);
             }
         }

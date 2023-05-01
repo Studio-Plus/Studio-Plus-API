@@ -16,7 +16,7 @@ namespace Mod
         [SkipSerialisation]
         private float timer = 0f;
         [SkipSerialisation]
-        private float interval = 0.5f;
+        private readonly float interval = 0.5f;
 
         protected new void FixedUpdate()
         {
@@ -26,14 +26,14 @@ namespace Mod
 
         public void Use(ActivationPropagation activationPropagation)
         {
-            if (timer < interval || !isAttached || !enabled)
+            if (timer < interval || !IsAttached || !enabled)
                 return;
             Pew();
         }
 
         public void UseContinuous(ActivationPropagation activationPropagation)
         {
-            if (timer < 0.1f || !isAttached || !enabled)
+            if (timer < 0.1f || !IsAttached || !enabled)
                 return;
             Pew();
         }
@@ -66,7 +66,7 @@ namespace Mod
             base.Start();
             TexturePlus.CreateLightSprite(
                 light = new GameObject("Glow"),
-                armorObject.transform,
+                ArmorObject.transform,
                 UniversalAssets.gloveLight,
                 new Vector2(0f, -7.5f) * ModAPI.PixelSize,
                 new Color32(0, 255, 255, 63),
@@ -89,7 +89,7 @@ namespace Mod
         }
     }
 
-    public class FirePower : PowerPlus
+    public class FirePower : PowerPlus, Messages.IUse
     {
         [SkipSerialisation]
         public GameObject eyeLight;
@@ -99,29 +99,32 @@ namespace Mod
         [SkipSerialisation]
         public Color powerColor = new Color32(255, 127, 0, 63);
 
-        public bool eyeActive = true;
+        protected bool eyeActive = true;
 
+        public void Use(ActivationPropagation a)
+        {
+            if (PowerActive)
+                ForceTogglePower(false);
+            else if (Person.transform.Find(LimbList.head).GetComponent<LimbBehaviour>().IsConsideredAlive)
+                ForceTogglePower(true);
+            else return;
+        }
 
         protected override void CreatePower()
         {
-            base.CreatePower();
-
-            foreach (var limbs in person.Limbs)
+            foreach (var limbs in Person.Limbs)
             {
                 var phys = limbs.PhysicalBehaviour;
 
                 limbs.DiscomfortingHeatTemperature = float.PositiveInfinity;
                 phys.SimulateTemperature = false;
 
-                phys.Properties = UniversalAssets.humanProperties;
-                phys.Properties.Flammability = 0f;
-                phys.Properties.Burnrate = 0f;
-                phys.Properties.BurningTemperatureThreshold = float.PositiveInfinity;
+                phys.Properties = UniversalAssets.fireHumanProperties;
             }
 
             TexturePlus.CreateLightSprite(
                 eyeLight = new GameObject("Light"),
-                limb.transform.root.transform.Find(LimbList.head),
+                Limb.transform.root.transform.Find(LimbList.head),
                 UniversalAssets.eyeLight,
                 new Vector2(2.5f, 1.5f) * ModAPI.PixelSize,
                 powerColor,
@@ -129,58 +132,23 @@ namespace Mod
             );
             eyeLight.SetActive(eyeActive);
 
-            abilities.Add(LimbList.FindLimb(limb.transform.root, LimbList.lowerArmFront).gameObject.GetOrAddComponent<FireTouch>());
-            abilities.Add(LimbList.FindLimb(limb.transform.root, LimbList.lowerArmBack).gameObject.GetOrAddComponent<FireTouch>());
+            abilities.Add(LimbList.FindLimb(Limb.transform, LimbList.lowerArmFront).gameObject.GetOrAddComponent<FireTouch>());
+            abilities.Add(LimbList.FindLimb(Limb.transform, LimbList.lowerArmBack).gameObject.GetOrAddComponent<FireTouch>());
         }
   
-        public override void ToggleAbility(bool toggle)
+        protected override void TogglePower(bool toggled)
         {
-            //Use this as the basis of the toggle
-            switch (toggle)
-            {
-                case true:
-                    abilityEnabled = toggle;
-                    Debug.Log("Abilities Enabled!");
-                    foreach (FireTouch ability in abilities)
-                    {
-                        ability.enabled = toggle;
-                    }
-                    break;
-                case false:
-                    abilityEnabled = toggle;
-                    Debug.Log("Abilities Disabled!");
-                    foreach (FireTouch ability in abilities)
-                    {
-                        ability.enabled = toggle;
-                    }
-                    break;
-            }
+            eyeLight.SetActive(toggled);
+            eyeActive = toggled;
         }
 
-        public override void TogglePower(bool toggle)
+        protected override void ToggleAbility(bool toggled)
         {
-            switch (toggle)
-            {
-                case true:
-                    powerEnabled = toggle;
-                    Debug.Log("Power Enabled!");
-                    ToggleAbility(toggle);
-                    eyeLight.SetActive(toggle);
-                    eyeActive = toggle;
-                    break;
-                case false:
-                    powerEnabled = toggle;
-                    Debug.Log("Power Disabled!");
-                    ToggleAbility(toggle);
-                    eyeLight.SetActive(toggle);
-                    eyeActive = toggle;
-                    break;
-            }
         }
 
         protected override void DeletePower()
         {
-            foreach (var limbs in person.Limbs)
+            foreach (var limbs in Person.Limbs)
             {
                 var phys = limbs.PhysicalBehaviour;
 
@@ -189,29 +157,20 @@ namespace Mod
 
                 phys.Properties = UniversalAssets.humanProperties;
             }
-
-            foreach (FireTouch ability in abilities)
-            {
-                Destroy(ability);
-            }
+            Destroy(eyeLight);
         }
     }
 
-    public class FireTouch : MonoBehaviour
+    public class FireTouch : Ability
     {
         [SkipSerialisation]
         public GameObject armLight;
         [SkipSerialisation]
         public LightSprite armGlow;
         [SkipSerialisation]
-        public LimbBehaviour limb;
-        [SkipSerialisation]
         public Color powerColor = new Color32(255, 127, 0, 31);
 
-        public void Awake()
-        {
-            limb = GetComponent<LimbBehaviour>();
-        }
+        
 
         public void Start()
         {
@@ -241,24 +200,14 @@ namespace Mod
             }
         }
 
-        public void Update()
+        public override void OnEnable()
         {
-            if (!limb.NodeBehaviour.IsConnectedToRoot && enabled)
-            {
-                enabled = false;
-            }
+            armLight?.SetActive(true);
         }
 
-        public void OnEnable()
+        public override void OnDisable()
         {
-            if (armLight != null)
-                armLight.SetActive(true);
-        }
-
-        public void OnDisable()
-        {
-            if (armLight != null)
-                armLight.SetActive(false);
+            armLight?.SetActive(false);
         }
     }
 }
