@@ -1,4 +1,4 @@
-# StudioPlusAPI DOCUMENTATION (v3.1.0)
+# StudioPlusAPI DOCUMENTATION (v3.1.1)
 ## ChemistryPlus
 ### AddLiquidToItem() 
 This method allows to add a liquid to an already existing item. Contains 2 overloads.<br/>
@@ -410,6 +410,15 @@ ModAPI.Register(
 );
 ```
 Keep in mind that mostly you'll probably want to modify TrueInitialMass around the original item you spawned, but giving you possibilites you might never need to use is kind of the theme of this API.
+
+### PlusAPI.liter & friends
+Stores the value of a liter. Also stores the value of some important liquid containers.
+```cs
+public const float liter = 2.8f;
+public const float syringe = 0.5f * liter;
+public const float flask = liter;
+public const float bloodTank = 5f * liter;
+```
 
 ### IgnoreCollision()
 A short-hand way to write PPG's method for ignoring collision because I won't be typing IgnoreCollisionStackController.IgnoreCollisionSubstituteMethod() every time I want to do something with collisions

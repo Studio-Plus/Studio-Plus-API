@@ -22,6 +22,11 @@ namespace StudioPlusAPI
         public const float kilogram = 0.025f;
         //For reference, a metal rod weighs about 3 kilograms
 
+        public const float liter = 2.8f;
+        public const float syringe = 0.5f * liter;
+        public const float flask = liter;
+        public const float bloodTank = 5f * liter;
+
         public static void IgnoreEntityCollision(Collider2D main, Collider2D[] others, bool ignColl, bool affectItself = false)
         {
             foreach (Collider2D a in others)

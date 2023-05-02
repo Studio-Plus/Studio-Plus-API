@@ -1,5 +1,8 @@
 # STUDIO PLUS API CHANGELOG
 
+## v3.1.1 (2nd May 2023)
+- Added PlusAPI.liter and a few others (See documentation)
+
 ## v3.1.0 (1st May 2023)
 - Some updates to PowerPlus
   - Added an Ability class which surprisingly is not totally useless like I thought previously
