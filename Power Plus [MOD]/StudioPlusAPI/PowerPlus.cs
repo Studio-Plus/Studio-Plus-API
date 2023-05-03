@@ -23,12 +23,14 @@ namespace StudioPlusAPI
         [SkipSerialisation]
         public PersonBehaviour Person { get; protected set; }
         [SkipSerialisation]
-        public List<Ability> abilities = new List<Ability>();
+        public List<Ability> Abilities { get; protected set; } = new List<Ability>();
         public bool PowerEnabled { get; protected set; } = false;
         public bool AbilityEnabled { get; protected set; } = false;
 
         public bool PowerActive { get; protected set; } = false;
         public bool AbilityActive { get; protected set; } = false;
+
+        public bool IsCreated { get; protected set; } = false;
 
 
         protected virtual void Awake()
@@ -66,7 +68,7 @@ namespace StudioPlusAPI
 
         protected void OnDestroy()
         {
-            foreach (Ability ability in abilities)
+            foreach (Ability ability in Abilities)
             {
                 Destroy(ability);
             }
@@ -75,11 +77,15 @@ namespace StudioPlusAPI
 
         //This method adds everything to the entity, like light sprites, strength, ability classes, etc.
         protected void CreatePowerInt()
-        {
-            PowerActive = true;
-            AbilityActive = true;
-            Debug.Log("Power created!");
+        {       
+            if (!IsCreated)
+            {
+                PowerActive = true;
+                AbilityActive = true;
+                Debug.Log("Power created!");
+            }
             CreatePower();
+            IsCreated = true;
         }
 
         //This class turns *the power* on or off, as if the power was never there. Main use for when the one with power is killed, but so he can still be revived.
@@ -107,7 +113,7 @@ namespace StudioPlusAPI
             {
                 case true:
                     AbilityEnabled = toggled;
-                    foreach (Ability ability in abilities)
+                    foreach (Ability ability in Abilities)
                     {
                         ability.enabled = toggled;
                     }
@@ -115,7 +121,7 @@ namespace StudioPlusAPI
                     break;
                 case false:
                     AbilityEnabled = toggled;
-                    foreach (Ability ability in abilities)
+                    foreach (Ability ability in Abilities)
                     {
                         ability.enabled = toggled;
                     }
@@ -137,12 +143,16 @@ namespace StudioPlusAPI
         {
             PowerActive = toggled;
             AbilityActive = toggled;
+            if (toggled || !PowerEnabled)
+                return;
             TogglePowerInt(toggled);
         }
 
         public void ForceToggleAbility(bool toggled)
         {
             AbilityActive = toggled;
+            if (toggled || !AbilityEnabled)
+                return;
             ToggleAbilityInt(toggled);
         }
     }

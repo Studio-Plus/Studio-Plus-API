@@ -1,7 +1,7 @@
 # StudioPlusAPI
 ## TexturePlus
 ### ChangeLightColor()
-Allows for ~~lazy~~ easy changing of your light sprite color. Contains x overloads.
+Allows for ~~lazy~~ easy changing of your light sprite color. Contains 2 overloads.
 ```cs
 public static void ChangeLightColor(GameObject lightObject, LightSprite glow, Color newColor)
 
@@ -29,12 +29,11 @@ TexturePlus.ChangeLightColor(
 ...<br/>
 Okay now this is just straight-up ridiculous, who even came up with this? Oh.
 
-### ConvertToGlowColor()
-I might as well mention this one in here. All this method actually does is change the alpha of whatever color you input to 1f (255), i.e. makes it opaque.<br/>
-Used mainly for the other light sprite methods because doing this manually is a pain.
+### ChangeAlpha()
+Might as well mention it here. This method changes the alpha of a given color. Contains 2 overloads.
 ```cs
-public static Color ConvertToGlowColor(Color color)
-{
-    return new Color(color.r, color.g, color.b, 1f);
-}
+public static Color ChangeAlpha(Color color, float alpha = 1f)
+
+public static Color32 ChangeAlpha(Color32 color, byte alpha = 255)
 ```
+By default it changes the alpha to the maximum (Either 1f or 255), but you can set it to whatever you want.

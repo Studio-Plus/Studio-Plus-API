@@ -50,7 +50,7 @@ namespace StudioPlusAPI
             lightSprite.sortingOrder = parentObject.GetComponent<SpriteRenderer>().sortingOrder + 1;
 
             glow.transform.localPosition = Vector3.zero;
-            glow.Color = ConvertToGlowColor(color);
+            glow.Color = ChangeAlpha(color);
             glow.Radius = radius;
             glow.Brightness = brightness;
         }
@@ -65,7 +65,7 @@ namespace StudioPlusAPI
         public static void ChangeLightColor(GameObject lightObject, LightSprite glow, Color newColor)
         {
             lightObject.GetComponent<SpriteRenderer>().color = newColor;
-            glow.Color = ConvertToGlowColor(newColor);
+            glow.Color = ChangeAlpha(newColor);
         }
 
         public static void ChangeLightColor(GameObject lightObject, Color newColor)
@@ -73,9 +73,14 @@ namespace StudioPlusAPI
             lightObject.GetComponent<SpriteRenderer>().color = newColor;
         }
 
-        public static Color ConvertToGlowColor(Color color)
+        public static Color ChangeAlpha(Color color, float alpha = 1f)
         {
-            return new Color(color.r, color.g, color.b, 1f);
+            return new Color(color.r, color.g, color.b, alpha);
+        }
+
+        public static Color32 ChangeAlpha(Color32 color, byte alpha = 255)
+        {
+            return new Color32(color.r, color.g, color.b, alpha);
         }
 
 

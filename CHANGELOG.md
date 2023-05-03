@@ -1,5 +1,14 @@
 # STUDIO PLUS API CHANGELOG
 
+## v3.1.2 (3rd May 2023)
+- Changes to PowerPlus:
+  - Made Abilities list into a properrty
+  - Added 'IsCreated' (See documentation)
+  - Changed ForceAbilityToggle and ForcePowerToggle (Again, see documentation)
+- Modified the PowerPlus documentation a bit while I'm on it.
+- Changed ConvertToGlowColor() to ChangeAlpha() (See documentation)
+- Other minor changes/fixes to the documentation
+
 ## v3.1.1 (2nd May 2023)
 - Added PlusAPI.liter and a few others (See documentation)
 
@@ -10,7 +19,7 @@
   - Generally changed the structure of the class (See documentation)
 - PowerPlus now has a documentation entry
 - Any public fields are now public properties instead.
-- Fixed up PowerPlus, specifically PhysicalProperties (I implore you, check the comment in PowerPlus [MOD]/Code/Main.cs)
+- Fixed up Power Plus [MOD], specifically PhysicalProperties (I implore you, check the comment in PowerPlus [MOD]/Code/Main.cs)
 - Slight modifications to the ArmorBehaviour documentation entry
 - Slightly modified Limblist.FindLimb();
 

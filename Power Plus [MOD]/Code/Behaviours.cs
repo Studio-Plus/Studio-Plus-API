@@ -78,7 +78,7 @@ namespace Mod
 
         protected void FixedUpdate()
         {
-            if (glow != null)
+
                 glow.Brightness = UnityEngine.Random.Range(0.65f, 0.85f);
         }
 
@@ -99,15 +99,12 @@ namespace Mod
         [SkipSerialisation]
         public Color powerColor = new Color32(255, 127, 0, 63);
 
-        protected bool eyeActive = true;
-
         public void Use(ActivationPropagation a)
         {
             if (PowerActive)
                 ForceTogglePower(false);
-            else if (Person.transform.Find(LimbList.head).GetComponent<LimbBehaviour>().IsConsideredAlive)
+            else
                 ForceTogglePower(true);
-            else return;
         }
 
         protected override void CreatePower()
@@ -130,16 +127,15 @@ namespace Mod
                 powerColor,
                 eyeGlow = TexturePlus.InstantiateLight(eyeLight.transform)
             );
-            eyeLight.SetActive(eyeActive);
+            eyeLight.SetActive(PowerEnabled);
 
-            abilities.Add(LimbList.FindLimb(Limb.transform, LimbList.lowerArmFront).gameObject.GetOrAddComponent<FireTouch>());
-            abilities.Add(LimbList.FindLimb(Limb.transform, LimbList.lowerArmBack).gameObject.GetOrAddComponent<FireTouch>());
+            Abilities.Add(LimbList.FindLimb(Limb.transform, LimbList.lowerArmFront).gameObject.GetOrAddComponent<FireTouch>());
+            Abilities.Add(LimbList.FindLimb(Limb.transform, LimbList.lowerArmBack).gameObject.GetOrAddComponent<FireTouch>());
         }
   
         protected override void TogglePower(bool toggled)
         {
             eyeLight.SetActive(toggled);
-            eyeActive = toggled;
         }
 
         protected override void ToggleAbility(bool toggled)
@@ -157,7 +153,6 @@ namespace Mod
 
                 phys.Properties = UniversalAssets.humanProperties;
             }
-            Destroy(eyeLight);
         }
     }
 
