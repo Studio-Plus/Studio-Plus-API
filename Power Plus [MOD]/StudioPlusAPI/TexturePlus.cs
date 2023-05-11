@@ -103,10 +103,7 @@ namespace StudioPlusAPI
         public static void ReplaceItemSprite(string item, string[] childObjects, Sprite[] childReplaceSprites)
         {
             if (childObjects.Length != childReplaceSprites.Length)
-            {
-                Debug.LogError("StudioPlusAPI ReplaceItemSprite: Amount of child objects does not match replace textures");
-                return;
-            }
+                throw new ArgumentException("ReplaceItemSprite's amount of child objects does not match replace textures");
             for (int i = 0; i < childObjects.Length; i++)
             {
                 ReplaceItemSprite(item, childObjects[i], childReplaceSprites[i]);
@@ -116,10 +113,7 @@ namespace StudioPlusAPI
         public static void ReplaceItemSprite(string item, Sprite replaceSprite, string[] childObjects, Sprite[] childReplaceSprites)
         {
             if (childObjects.Length != childReplaceSprites.Length)
-            {
-                Debug.LogError("StudioPlusAPI ReplaceItemSprite: Amount of child objects does not match replace textures");
-                return;
-            }
+                throw new ArgumentException("ReplaceItemSprite's amount of child objects does not match replace textures");
             ReplaceItemSprite(item, replaceSprite);
             for (int i = 0; i < childObjects.Length; i++)
             {
@@ -131,6 +125,20 @@ namespace StudioPlusAPI
         public static void ReplaceViewSprite(string item, Sprite replaceSprite)
         {
             ModAPI.FindSpawnable(item).ViewSprite = replaceSprite;
+        }
+
+
+        public static float ToFloat(byte value)
+        {
+            float newValue = (float)value;
+            float returnValue = newValue / 255f;
+            return Mathf.Clamp01(returnValue);
+        }
+
+        public static byte ToByte(float value)
+        {
+            float newValue = Mathf.Clamp01(value) * 255f;
+            return (byte)newValue;
         }
     }
 }

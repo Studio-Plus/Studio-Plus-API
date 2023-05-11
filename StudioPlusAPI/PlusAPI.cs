@@ -8,6 +8,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine.Events;
 using StudioPlusAPI;
+using System.Threading;
 
 //StudioPlusAPI is an API for the game people playground, created by Dawid23 Gamer and Studio Plus. It allows for modders to program mods for the game more easily, or at least that's the idea. 
 //This API is released under the zlib license, by using it for your mod and/or downloading it you confirm that you read and agreed to the terms of said license.
@@ -44,6 +45,28 @@ namespace StudioPlusAPI
         public static void IgnoreCollision(Collider2D main, Collider2D other, bool ignColl)
         {
             IgnoreCollisionStackController.IgnoreCollisionSubstituteMethod(main, other, ignColl);
+        }
+
+        public static float WaveClamp01(float num, float period)
+        {
+            return -0.5f * Mathf.Cos(num * Mathf.PI / period) + 0.5f;
+        }
+
+        public static float WaveClamp(float num, float period, float maxNum)
+        {
+            if (maxNum == 0)
+                throw new ArgumentException("WaveClamp's maxNum cannot equal 0");
+            float trueMaxNum = Mathf.Abs(maxNum);
+            return trueMaxNum * (-0.5f * Mathf.Cos(num * Mathf.PI / period) + 0.5f);
+        }
+
+        public static float WaveClamp(float num, float period, float maxNum, float minNum)
+        {
+            if (maxNum == minNum)
+                throw new ArgumentException("WaveClamp's maxNum and minNum cannot be equal");
+            float trueMaxNum = maxNum > minNum ? maxNum : minNum;
+            float trueMinNum = maxNum > minNum ? minNum : maxNum;
+            return (trueMaxNum - trueMinNum) * (-0.5f * Mathf.Cos(num * Mathf.PI / period) + 0.5f) + trueMinNum;
         }
     }
 

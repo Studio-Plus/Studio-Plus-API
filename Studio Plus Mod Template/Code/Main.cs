@@ -13,7 +13,7 @@ namespace Mod
 {
     public class Mod : MonoBehaviour
     {
-        public static string tag = " [TEMPLATE]";
+        public static string modTag = " [TEMPLATE]";
 
         public static void Main()
         {
@@ -27,7 +27,7 @@ namespace Mod
             //    new Modification()
             //    {
             //        OriginalItem = ModAPI.FindSpawnable("Rod"),
-            //        NameOverride = "placeholder item" + ModTag,
+            //        NameOverride = "placeholder item" + modTag,
             //        DescriptionOverride = "It's 6 am and theres a fly in my room and I'm scared of it.",
             //        CategoryOverride = ModAPI.FindCategory("Entities"),
             //        ThumbnailOverride = ModAPI.LoadSprite("sprites/placeholder.png"),

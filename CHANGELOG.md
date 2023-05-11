@@ -1,5 +1,11 @@
 # STUDIO PLUS API CHANGELOG
 
+## v3.1.3 (9th May 2023)
+- Added WaveClamp01() and WaveClamp() (See documentation)
+- Added TexturePlus.ToFloat and TexturePlus.ToByte (Again, see documentation)
+- Updated the way Advanced Texture Pack System throws exceptions. Now they're actually exceptions.
+- Ability class's Awake() is now a virtual void.
+
 ## v3.1.2 (3rd May 2023)
 - Changes to PowerPlus:
   - Made Abilities list into a properrty

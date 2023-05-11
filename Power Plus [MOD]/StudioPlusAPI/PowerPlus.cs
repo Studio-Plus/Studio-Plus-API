@@ -164,7 +164,7 @@ namespace StudioPlusAPI
         [SkipSerialisation]
         public PersonBehaviour Person { get; protected set; }
 
-        protected void Awake()
+        protected virtual void Awake()
         {
             Limb = GetComponent<LimbBehaviour>();
             Person = Limb.Person;

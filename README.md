@@ -1,5 +1,5 @@
 # Studio-Plus-API
-## Current Version: v3.1.2
+## Current Version: v3.1.3
 This is an API for mods created by Studio Plus, open source because stuff like this should be open source.
 
 There are 2 types of snippets in here:

@@ -3,7 +3,7 @@
 ### public abstract class Ability : MonoBehaviour
 This is a class for all abilities added by PowerPlus class.
 
-To start, PowerPlus class has a list of abilities:
+For starters, tbe PowerPlus class has a list of abilities:
 ```cs
 public List<Ability> abilities = new List<Ability>();
 ```
@@ -13,11 +13,11 @@ protected override void CreatePower()
 {
     //Other code here...
 
-    abilities.Add(LimbList.FindLimb(Limb.transform, LimbList.lowerArmFront).gameObject.GetOrAddComponent<FireTouch>());
-    abilities.Add(LimbList.FindLimb(Limb.transform, LimbList.lowerArmBack).gameObject.GetOrAddComponent<FireTouch>());
+    abilities.Add(LimbList.FindLimb(Limb.transform, LimbList.lowerArmFront).gameObject.GetOrAddComponent<MyAbility>());
+    abilities.Add(LimbList.FindLimb(Limb.transform, LimbList.lowerArmBack).gameObject.GetOrAddComponent<MyAbility>());
 }
 ```
-It's important that you do it like that by finding the appropriate limb then adding the Ability via GetOrAddComponent to make it work.
+It's important that you do it like that by finding the appropriate limb then adding the Ability via GetOrAddComponent to make it work properly.
 
 To spare the explaining of every method (and because the class is short enough) I will put it here as reference:
 ```cs
@@ -28,7 +28,7 @@ public abstract class Ability : MonoBehaviour
     [SkipSerialisation]
     public PersonBehaviour Person { get; protected set; }
 
-    protected void Awake()
+    protected virtual void Awake()
     {
         Limb = GetComponent<LimbBehaviour>();
         Person = Limb.Person;

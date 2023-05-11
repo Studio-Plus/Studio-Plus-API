@@ -1,4 +1,4 @@
-# StudioPlusAPI DOCUMENTATION (v3.1.2)
+# StudioPlusAPI DOCUMENTATION (v3.1.3)
 ## ChemistryPlus
 ### AddLiquidToItem() 
 This method allows to add a liquid to an already existing item. Contains 2 overloads.<br/>
@@ -110,6 +110,7 @@ This will be a list of every single liquid ID in people playground. This will al
 - Gasoline.ID
 - Chemistry.DebugDiscolorationLiquid.ID
 - Chemistry.InertLiquid.ID
+
 
 ## TexturePlus
 ### CreateLightSprite()
@@ -306,6 +307,27 @@ This one is straight forward and doesn't contain any overloads.
 ```cs
 TexturePlus.ReplaceItemSpriteOfChild("Sword", ModAPI.LoadSprite("Upscaled Sword View.png"));
 ```
+### ToFloat()
+Changes a byte color (0 to 255) into its corresponding float. Clamped between 0f and 1f:
+```cs
+public static float ToFloat(byte value)
+{
+    float newValue = (float)value;
+    float returnValue = newValue / 255f;
+    return Mathf.Clamp01(returnValue);
+}
+```
+
+### ToByte()
+Inverse operation of ToFloat, also clamped between 0 and 255:
+```cs
+public static byte ToByte(float value)
+{
+    float newValue = Mathf.Clamp01(value) * 255f;
+    return (byte)newValue;
+}
+```
+
 
 ## CreationPlus
 ### SpawnItem()
@@ -500,6 +522,46 @@ LimbList.FindLimb(limb.transform, LimbList.lowerArmFront);
 ```
 is just as valid as limb.transform.root!
 
+### WaveClamp()
+A collection of a few special mathemagical functions that can be easily applied. We will be skipping over boring mathematical details and jump right into the mathemagic!<br/>
+Contains a total of 3 overloads:
+####  WaveClamp01()
+```cs
+public static float WaveClamp01(float num, float period)
+```
+This special overload that is actually its own method will interchangibly return a value between 0 and 1 given a periodic amount of time period and a self-incrementing value num.<br/>
+I assume only 0.1% of readers will understand what I mean so a quick example:
+```cs
+float timer = 0f;
+float myValue = 0f;
+
+public void FixedUpdate()
+{
+    myValue = PlusAPI.WaveClamp01(timer, 2f);
+    timer += Time.fixedDeltaTime;
+}
+```
+This method is mostly meant for these kinds of scenarios<br/>
+In this sexample, myValue will first be 0 and will start going upwards, then after 2 seconds it will be 1 and will start to go down. After 2 more seconds (4 total since this code started running) myValue will be back at 0 and so on. Why 2 seconds? Because the timer measures time in seconds, and the period between the extrema (in this case, 0 and 1) is set to 2f, so 2 seconds.<br/>
+The property of it interchanging between 2 different values at a fixed speed could be extremely useful in certain scenarios.
+#### WaveClamp()
+This is the generic method containing the 2 remaining overloads.<br/>
+Overload 1:
+```cs
+public static float WaveClamp(float num, float period, float maxNum)
+```
+Similar to WaveClamp01(), but it  will interchange between 0 and a specified maxNum instead.<br/> 
+MaxNum parameter cannot be 0 and the method will throw an exception in that case. If maxNum is negative, the method will automatically convert it to a positive value.<br/>
+But wait, why does maxNum here come first? It's because the mathematical function of this overload is way easier than the function of the other overload so it comes first.
+
+Overload 2:
+```cs
+public static float WaveClamp(float num, float period, float maxNum, float minNum)
+```
+Similar to the 1st WaveClamp() overload, but you can also specify the minimum value, so it will interchange between minNum and MaxNum. When num is 0, minNum will be returned.<br/>
+minNum and maxNum can't be equal and the method will throw an exception if they are. If minNum is larger than maxNum, the values will be flipped around, so minNum will actually be maxNum in the mathematical function and vice versa.
+
+
 ## ArmorBehaviour (REQUIRES CreationPlus and PlusAPI)
 ### public class ArmorBehaviour : MonoBehaviour
 This class must be added to the object you want to make into armor in order for it to be armor.
@@ -644,6 +706,7 @@ public class BlasterGloveWearer : BodyArmorWearer
     }
 }
 ```
+
 
 ## PowerPlus (PlusAPI HIGHLY recommended)
 ### public abstract class PowerPlus : MonoBehaviour
@@ -859,7 +922,7 @@ The only thing that needs to be done when Power is deleted is deleting the abili
 ### public abstract class Ability : MonoBehaviour
 This is a class for all abilities added by PowerPlus class.
 
-To start, PowerPlus class has a list of abilities:
+For starters, tbe PowerPlus class has a list of abilities:
 ```cs
 public List<Ability> abilities = new List<Ability>();
 ```
@@ -869,11 +932,11 @@ protected override void CreatePower()
 {
     //Other code here...
 
-    abilities.Add(LimbList.FindLimb(Limb.transform, LimbList.lowerArmFront).gameObject.GetOrAddComponent<FireTouch>());
-    abilities.Add(LimbList.FindLimb(Limb.transform, LimbList.lowerArmBack).gameObject.GetOrAddComponent<FireTouch>());
+    abilities.Add(LimbList.FindLimb(Limb.transform, LimbList.lowerArmFront).gameObject.GetOrAddComponent<MyAbility>());
+    abilities.Add(LimbList.FindLimb(Limb.transform, LimbList.lowerArmBack).gameObject.GetOrAddComponent<MyAbility>());
 }
 ```
-It's important that you do it like that by finding the appropriate limb then adding the Ability via GetOrAddComponent to make it work.
+It's important that you do it like that by finding the appropriate limb then adding the Ability via GetOrAddComponent to make it work properly.
 
 To spare the explaining of every method (and because the class is short enough) I will put it here as reference:
 ```cs
@@ -884,7 +947,7 @@ public abstract class Ability : MonoBehaviour
     [SkipSerialisation]
     public PersonBehaviour Person { get; protected set; }
 
-    protected void Awake()
+    protected virtual void Awake()
     {
         Limb = GetComponent<LimbBehaviour>();
         Person = Limb.Person;
