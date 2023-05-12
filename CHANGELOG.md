@@ -1,5 +1,8 @@
 # STUDIO PLUS API CHANGELOG
 
+## v3.2.1 (12th May 2023)
+- For PowerPlus, if a limb in the Ability list is dead, its powers will turn off (see documentation for details)
+
 ## v3.2.0 (12th May 2023)
 - Fixed CreateLightSprite, now it doesn't require you to initialize the GameObject and LightSprite variables within the method (See documentation for further details). Finally
   - Since InstantiateLight lost purpose, it is now marked as obsolete

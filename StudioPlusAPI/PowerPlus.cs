@@ -172,10 +172,10 @@ namespace StudioPlusAPI
 
         public virtual void FixedUpdate()
         {
-            if (!Limb.NodeBehaviour.IsConnectedToRoot && enabled)
-            {
+            if (enabled && (!Limb.NodeBehaviour.IsConnectedToRoot || !Limb.IsConsideredAlive))
                 enabled = false;
-            }
+            else if (!enabled && Limb.IsConsideredAlive)
+                enabled = true;
         }
 
         public abstract void OnEnable();

@@ -36,10 +36,10 @@ public abstract class Ability : MonoBehaviour
 
     public virtual void FixedUpdate()
     {
-        if (!Limb.NodeBehaviour.IsConnectedToRoot && enabled)
-        {
+        if (enabled && (!Limb.NodeBehaviour.IsConnectedToRoot || !Limb.IsConsideredAlive))
             enabled = false;
-        }
+        else if (!enabled && Limb.IsConsideredAlive)
+            enabled = true;
     }
 
     public abstract void OnEnable();
@@ -48,7 +48,7 @@ public abstract class Ability : MonoBehaviour
 }
 ```
 As you can see, like PowerPlus it has Limb and Person and immediately assigns values for them.<br/>
-It also contains the last of Power & Abilities Toggle Conditions: When the limb is separated from the body, it disables the class.
+It also contains the last of Power & Abilities Toggle Conditions: When the limb is separated from the body or if it's dead, it disables the class.
 
 The class works the way it works mostly because of that 1 line of code.<br/>
 It also contains the 2 absract methods OnEnable() and OnDisable(), in which you should define what happens when this ability is toggled on and off respectively.
