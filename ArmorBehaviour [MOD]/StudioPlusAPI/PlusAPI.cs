@@ -104,9 +104,29 @@ namespace StudioPlusAPI
             return transform.root.Find(limbType);
         }
 
-        public static Transform FindLimb(GameObject gameObject, string limbType)
+        public static GameObject FindLimb(GameObject gameObject, string limbType)
         {
-            return gameObject.transform.root.Find(limbType);
+            return gameObject.transform.root.Find(limbType).gameObject;
+        }
+
+        public static LimbBehaviour FindLimbBeh(Transform transform, string limbType)
+        {
+            return FindLimbComp<LimbBehaviour>(transform, limbType);
+        }
+
+        public static LimbBehaviour FindLimbBeh(GameObject gameObject, string limbType)
+        {
+            return FindLimbComp<LimbBehaviour>(gameObject, limbType);
+        }
+
+        public static T FindLimbComp<T>(Transform transform, string limbType) where T : MonoBehaviour
+        {
+            return transform.root.Find(limbType).GetComponent<T>();
+        }
+
+        public static T FindLimbComp<T>(GameObject gameObject, string limbType) where T : MonoBehaviour
+        {
+            return gameObject.transform.root.Find(limbType).GetComponent<T>();
         }
     }
 }

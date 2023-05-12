@@ -1,7 +1,7 @@
 # StudioPlusAPI
 ## ArmorBehaviour (REQUIRES CreationPlus and PlusAPI)
 ### public abstract class ArmorWearer : MonoBehaviour
-This class gets automatically added to every limb after armor is attached to it. The API by itself comes with ClothingWearer and BodyArmorWearer, which don't do nothing more than the most basic functions they're supposed to do. They also have their own methods as  already stated in  the ArmorBehaviour section
+This class gets automatically added to the limb after armor is attached to it. The API by itself comes with ClothingWearer and BodyArmorWearer, which don't do nothing more than the most basic functions they're supposed to do. They also have their own methods as already stated in the ArmorBehaviour section
 
 It's a very important part of the ArmorBehaviour, specifically the way that there are different armor flavors like Clothing and Body Armor. This is also the behaviour's weak spot so it's very important that you read this carefully:
 1. The class is abstract simply becasue ArmorWearer is not meant to be added in directly to a limb, I did not test how armor behaves in such circumstance.
@@ -22,12 +22,12 @@ public class BlasterGloveWearer : BodyArmorWearer
     {
         base.Start();
         TexturePlus.CreateLightSprite(
-            light = new GameObject("Glow"),
+            out light,
             armorObject.transform,
             UniversalAssets.gloveLight,
             new Vector2(0f, -7.5f) * ModAPI.PixelSize,
             new Color32(0, 255, 255, 63),
-            glow = TexturePlus.InstantiateLight(light.transform),
+            out glow,
             5f,
             0.75f
         );

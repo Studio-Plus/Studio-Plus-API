@@ -49,7 +49,7 @@ namespace StudioPlusAPI
             return spawnedItem;
         }
 
-        /*
+        [Obsolete]
         public static GameObject SpawnItemStatic(SpawnableAsset item, Vector2 position = default, bool spawnSpawnParticles = false)
         {
             GameObject spawnedItem = UnityEngine.Object.Instantiate(item.Prefab, position, Quaternion.identity);
@@ -62,7 +62,6 @@ namespace StudioPlusAPI
             CatalogBehaviour.PerformMod(item, spawnedItem);
             return spawnedItem;
         }
-        */
 
 
         public static void CreateFixedJoint(GameObject main, GameObject other)

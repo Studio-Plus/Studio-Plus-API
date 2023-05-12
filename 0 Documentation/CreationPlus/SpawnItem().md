@@ -32,10 +32,9 @@ var newObject = CreationPlus.SpawnItemAsChild(ModAPI.FindSpawnable("Crossbow Bol
 ```
 
 ### SpawnItemStatic()
-The so far only hidden method that is blocked by comments.
+The so far only big obsolete method:
 ```cs
-/*
+[Obsolete]
 public static GameObject SpawnItemStatic(SpawnableAsset item, Vector2 position = default, bool spawnSpawnParticles = false)
-*/
 ```
 It's the old SpawnItem method that spawns the item at a fixed point perfectly rotated towards the plane. I'm not sure if it's useful or not cuz I wrote this last-minute change at 11 PM so I left it hidden in the code.

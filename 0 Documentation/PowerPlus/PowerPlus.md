@@ -46,12 +46,12 @@ protected override void CreatePower()
     }
 
     TexturePlus.CreateLightSprite(
-        eyeLight = new GameObject("Light"),
+        out eyeLight,
         Limb.transform.root.transform.Find(LimbList.head),
         UniversalAssets.eyeLight,
         new Vector2(2.5f, 1.5f) * ModAPI.PixelSize,
         powerColor,
-        eyeGlow = TexturePlus.InstantiateLight(eyeLight.transform)
+        out eyeGlow
     );
     eyeLight.SetActive(eyeActive);
 
@@ -136,30 +136,30 @@ if (!PowerActive && !AbilityActive)
 
 if (AbilityActive)
 {
-    if (Person.Consciousness < 0.8f && AbilityEnabled)
+    if (AbilityEnabled && !LimbList.FindLimbBeh(transform, LimbList.head).IsCapable)
         ToggleAbilityInt(false);
-    else if (Person.Consciousness >= 0.8f && !AbilityEnabled && PowerEnabled)
+    else if (!AbilityEnabled && LimbList.FindLimbBeh(transform, LimbList.head).IsCapable && PowerEnabled)
         ToggleAbilityInt(true);
 }
 
 if (PowerActive)
 {
-    if (!Person.transform.Find(LimbList.head).GetComponent<LimbBehaviour>().IsConsideredAlive && PowerEnabled)
+    if (!LimbList.FindLimbBeh(transform, LimbList.head).IsConsideredAlive && PowerEnabled)
         TogglePowerInt(false);
-    else if (Person.transform.Find(LimbList.head).GetComponent<LimbBehaviour>().IsConsideredAlive && !PowerEnabled)
+    else if (LimbList.FindLimbBeh(transform, LimbList.head).IsConsideredAlive && !PowerEnabled)
         TogglePowerInt(true);
 }
 ```
-I'll quickly summarize it in  wors here:
+I'll quickly summarize how it works here:
 
-If both Power And Abilities are toggled off, do nothing
+If both Power And Abilities are inactive, do nothing
 
-
-Else, if Ability is toggled on:
+Else...<br/>
+if Ability is active:
 - If person is unconscious and Ability wasn't disabled yet, disable them
 - Else if person is conscious and Ability wasn't enabled yet and Power is enabled, enable them
 
-If Power is toggled on:
+If Power is active:
 - If the head is dead and power wasn't disabled yet, disable it.
 - Else if the head is alive and power wasn't enabled yet, enable it.
 

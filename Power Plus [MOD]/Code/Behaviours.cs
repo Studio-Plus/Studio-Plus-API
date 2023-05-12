@@ -65,12 +65,12 @@ namespace Mod
         {
             base.Start();
             TexturePlus.CreateLightSprite(
-                light = new GameObject("Glow"),
+                out light,
                 ArmorObject.transform,
                 UniversalAssets.gloveLight,
                 new Vector2(0f, -7.5f) * ModAPI.PixelSize,
                 new Color32(0, 255, 255, 63),
-                glow = TexturePlus.InstantiateLight(light.transform),
+                out glow,
                 5f,
                 0.75f
             );
@@ -120,12 +120,12 @@ namespace Mod
             }
 
             TexturePlus.CreateLightSprite(
-                eyeLight = new GameObject("Light"),
+                out eyeLight,
                 Limb.transform.root.transform.Find(LimbList.head),
                 UniversalAssets.eyeLight,
                 new Vector2(2.5f, 1.5f) * ModAPI.PixelSize,
                 powerColor,
-                eyeGlow = TexturePlus.InstantiateLight(eyeLight.transform)
+                out eyeGlow
             );
             eyeLight.SetActive(PowerEnabled);
 
@@ -170,12 +170,12 @@ namespace Mod
         public void Start()
         {
             TexturePlus.CreateLightSprite(
-                armLight = new GameObject("ArmLight"),
+                out armLight,
                 transform,
                 UniversalAssets.powerLight,
                 Vector2.zero,
                 powerColor,
-                armGlow = TexturePlus.InstantiateLight(armLight.transform),
+                out armGlow,
                 5f,
                 0.75f
             );

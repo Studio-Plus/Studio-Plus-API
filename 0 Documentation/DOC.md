@@ -1,4 +1,4 @@
-# StudioPlusAPI DOCUMENTATION (v3.1.3)
+# StudioPlusAPI DOCUMENTATION (v3.2.0)
 ## ChemistryPlus
 ### AddLiquidToItem() 
 This method allows to add a liquid to an already existing item. Contains 2 overloads.<br/>
@@ -114,11 +114,11 @@ This will be a list of every single liquid ID in people playground. This will al
 
 ## TexturePlus
 ### CreateLightSprite()
-This method allows for creation of complex kught sprites Contains 2 overloads.
+This method allows for creation of complex light sprites. Contains 2 overloads.
 ```cs
-public static void CreateLightSprite(GameObject lightObject, Transform parentObject, Sprite sprite, Vector2 position, Color color)
+public static void CreateLightSprite(out GameObject lightObject, Transform parentObject, Sprite sprite, Vector2 position, Color color)
 
-public static void CreateLightSprite(GameObject lightObject, Transform parentObject, Sprite sprite, Vector2 position, Color color, LightSprite glow, float radius = 5f, float brightness = 1.5f)
+public static void CreateLightSprite(out GameObject lightObject, Transform parentObject, Sprite sprite, Vector2 position, Color color, out LightSprite glow, float radius = 5f, float brightness = 1.5f)
 ```
 The difference between this and **ModAPI.CreateLight()** is that this method primarily focuses on creating a light __sprite__ instead of just a light:
 ```cs
@@ -129,7 +129,7 @@ ExampleClass : MonoBehaviour
     public void Start()
     {
         TexturePlus.CreateLightSprite(
-            light = new GameObject("Light"),
+            out light,
             Instance.transform,
             ModAPI.LoadSprite("Textures/ExampleSprite.png"),
             Vector2.zero,
@@ -150,12 +150,12 @@ ExampleClass : MonoBehaviour
     public void Start()
     {
         TexturePlus.CreateLightSprite(
-            light = new GameObject("Light"),
+            out light,
             Instance.transform,
             ModAPI.LoadSprite("Textures/ExampleSprite.png"),
             Vector2.zero,
-            new Color32(255, 0, 0, 127), //Alternative to Color class, will also work here
-            glow = TexturePlus.InstantiateLight(light.transform), //must be transform of your light GameObject
+            new Color32(255, 0, 0, 127), //Alternative to Color struct, will also work here
+            out glow,
             5f,
             0.75f
         );
@@ -165,15 +165,7 @@ ExampleClass : MonoBehaviour
 When added to an object this will create a red glowing sprite (based on ExampleSprite.png) at half brightness and a glow-in-the-dark light at default radius (5f) and half default brightness (Default is 1.5f) in the middle of the light sprite.<br/>  
 This overload is besically a merging of both TexturePlus.CreateLightSprite() and ModAPI.CreateLight()
 
-### InstantiateLight()
-It's basically a partial copy of ModAPI.CreateLight() that makes adding glow more straightforward. I'm just gonna paste the entirety of it here:
-```cs
-public static LightSprite InstantiateLight(Transform parent)
-{
-    var component = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/ModLightPrefab"), parent).GetComponent<LightSprite>();
-    return component;
-}
-```
+Note that for both cases, you have to write 'out' in front of the light and glow variable or else C# will be mad at you.
 
 ### ChangeLightColor()
 Allows for ~~lazy~~ easy changing of your light sprite color. Contains 2 overloads.
@@ -362,11 +354,10 @@ var newObject = CreationPlus.SpawnItemAsChild(ModAPI.FindSpawnable("Crossbow Bol
 ```
 
 ### SpawnItemStatic()
-The so far only hidden method that is blocked by comments.
+The so far only big obsolete method:
 ```cs
-/*
+[Obsolete]
 public static GameObject SpawnItemStatic(SpawnableAsset item, Vector2 position = default, bool spawnSpawnParticles = false)
-*/
 ```
 It's the old SpawnItem method that spawns the item at a fixed point perfectly rotated towards the plane. I'm not sure if it's useful or not cuz I wrote this last-minute change at 11 PM so I left it hidden in the code.
 
@@ -462,6 +453,18 @@ PlusAPI.IgnoreEntityCollision(GetComponent<Collider2D>(), limbColliders, true);
 
 ### LimbList
 LimbList is technically its own struct but branded under PlusAPI because the only reason it is its own struct is to save on words when writing stuff from it out.
+#### Recommended:
+Add "using static StudioPlusAPI.LimbList" to the beginning of your code, like this:
+```cs
+using UnityEngine;
+using System;
+//Whatever else
+using StudioPlusAPI;
+using static StudioPlusAPI.LimbList;
+```
+It is not really used in the API itself for simplicity's sake, but if you're annoyed of typing 'LimbList' in front of a lot of things, this will make it so you don't have to add it because C# will know that it's meant to be there.<br/>
+You can also do this to other structs.
+
 #### Limb List
 LimbList contains a list of every single Limb transform ever:
 ```cs
@@ -504,23 +507,74 @@ Speaking of Find, this struct also contains a method that returns the child tran
 ```cs
 public static Transform FindLimb(Transform transform, string limbType)
 
-public static Transform FindLimb(GameObject gameObject, string limbType)
+public static GameObject FindLimb(GameObject gameObject, string limbType)
 ```
+
 Here's the example from above but done with this method:
 ```cs
 var lowerArmFront = LimbList.FindLimb(Instance.transform, LimbList.lowerArmFront);
 ```
-Wihle this is longer than what we started with, the overload actually allows us to make this shorter:
-```cs
-var lowerArmFront = LimbList.FindLimb(Instance, LimbList.lowerArmFront);
-```
-Now it is just a bit longer with the benefit of being more straight forward in this example.
 
-In addition, the method will always look for the root of the transform first before looking for the limb, so writing
+Wihle this is longer than what we started with, if you use the recommended line at the beginning of the entry, it would look more like this:
 ```cs
-LimbList.FindLimb(limb.transform, LimbList.lowerArmFront);
+//at the beginning of your file
+//using static StudioPlusAPI.LimbList;
+
+var lowerArmFront = FindLimb(Instance.transform, lowerArmFront);
 ```
-is just as valid as limb.transform.root!
+
+As you can see, this is now actually shorter than what we started with, but we could in theory make it even shorter:
+```cs
+//at the beginning of your file
+//using static StudioPlusAPI.LimbList;
+
+var lowerArmFront = FindLimb(Instance, lowerArmFront);
+```
+
+Instance is nothing other than a GameObject, so you don't actually have to get its transform in order for it to work.<br/>
+The most significant difference however is that this will return a GameObject instead. Use whatever will make the code shorter, here is a short cheatsheet:
+```cs
+//at the beginning of your file
+//using static StudioPlusAPI.LimbList;
+//In general, use the version below in a block (Note that depending on what you're doing this may not apply)
+
+FindLimb(Instance.transform, lowerArmFront).gameObject.AddComponent<MyComponent>();
+FindLimb(Instance, lowerArmFront).AddComponent<MyComponent>();
+
+FindLimb(Instance.transform, lowerArmFront).GetComponent<MyComponent>();
+FindLimb(Instance, lowerArmFront).GetComponent<MyComponent>();
+
+FindLimb(gameObject, lowerArmFront).GetComponent<MyComponent>();
+FindLimb(transform, lowerArmFront).GetComponent<MyComponent>();
+```
+
+In addition, the method always first goes to the root of the transform before attempting to find the transform/gameObject, so the following 2 expressions function the same:
+```cs
+var lowerArmFront = LimbList.FindLimb(limb.transform.root, LimbList.lowerArmFront).GetComponent<MyComponent>();
+var lowerArmFront = LimbList.FindLimb(limb.transform, LimbList.lowerArmFront).GetComponent<MyComponent>();
+```
+#### LimbList.FindLimbBeh()
+Often will the search for a limb transform also require you to Get its LimbBehaviour Component. Luckily, we got a method that makes this process shorter (Contains 2 overloads):
+```cs
+public static LimbBehaviour FindLimb(Transform transform, string limbType)
+
+public static LimbBehaviour FindLimb(GameObject gameObject, string limbType)
+```
+By adding 3 letters, you can eliminate the need of typing GetComponent for the LimbBehaviour
+
+#### LimbList.FindLimbComp()
+Similar in spirit to FindLimbBeh but generalized to any component on the limb (Contains 2 overloads):
+```cs
+public static T FindLimbComp<T>(Transform transform, string limbType) where T : MonoBehaviour
+
+public static T FindLimbComp<T>(GameObject gameObject, string limbType) where T : MonoBehaviour
+```
+By adding 4 letters this time, we can  yet  again spare us the time of writing GetComponent after finding the limb transform
+```cs
+var lowerArmFront = LimbList.FindLimb(limb.transform, LimbList.lowerArmFront).GetComponent<MyComponent>();
+var lowerArmFront = LimbList.FindLimbComp<MyComponent>(limb.transform, LimbList.lowerArmFront);
+```
+Remember that this and the previous methods only work for **getting** a component, not for adding it. We won't be simplifying adding components here.
 
 ### WaveClamp()
 A collection of a few special mathemagical functions that can be easily applied. We will be skipping over boring mathematical details and jump right into the mathemagic!<br/>
@@ -661,7 +715,7 @@ Another important property of the class. It returns true when armor is attached,
 It could have some specific uses for you, the modder, which is why it's in the API, because otherwise it is not used by the ArmorBehaviour class itself.
 
 ### public abstract class ArmorWearer : MonoBehaviour
-This class gets automatically added to every limb after armor is attached to it. The API by itself comes with ClothingWearer and BodyArmorWearer, which don't do nothing more than the most basic functions they're supposed to do. They also have their own methods as  already stated in  the ArmorBehaviour section
+This class gets automatically added to the limb after armor is attached to it. The API by itself comes with ClothingWearer and BodyArmorWearer, which don't do nothing more than the most basic functions they're supposed to do. They also have their own methods as already stated in the ArmorBehaviour section
 
 It's a very important part of the ArmorBehaviour, specifically the way that there are different armor flavors like Clothing and Body Armor. This is also the behaviour's weak spot so it's very important that you read this carefully:
 1. The class is abstract simply becasue ArmorWearer is not meant to be added in directly to a limb, I did not test how armor behaves in such circumstance.
@@ -682,12 +736,12 @@ public class BlasterGloveWearer : BodyArmorWearer
     {
         base.Start();
         TexturePlus.CreateLightSprite(
-            light = new GameObject("Glow"),
+            out light,
             armorObject.transform,
             UniversalAssets.gloveLight,
             new Vector2(0f, -7.5f) * ModAPI.PixelSize,
             new Color32(0, 255, 255, 63),
-            glow = TexturePlus.InstantiateLight(light.transform),
+            out glow,
             5f,
             0.75f
         );
@@ -755,12 +809,12 @@ protected override void CreatePower()
     }
 
     TexturePlus.CreateLightSprite(
-        eyeLight = new GameObject("Light"),
+        out eyeLight,
         Limb.transform.root.transform.Find(LimbList.head),
         UniversalAssets.eyeLight,
         new Vector2(2.5f, 1.5f) * ModAPI.PixelSize,
         powerColor,
-        eyeGlow = TexturePlus.InstantiateLight(eyeLight.transform)
+        out eyeGlow
     );
     eyeLight.SetActive(eyeActive);
 
@@ -845,30 +899,30 @@ if (!PowerActive && !AbilityActive)
 
 if (AbilityActive)
 {
-    if (Person.Consciousness < 0.8f && AbilityEnabled)
+    if (AbilityEnabled && !LimbList.FindLimbBeh(transform, LimbList.head).IsCapable)
         ToggleAbilityInt(false);
-    else if (Person.Consciousness >= 0.8f && !AbilityEnabled && PowerEnabled)
+    else if (!AbilityEnabled && LimbList.FindLimbBeh(transform, LimbList.head).IsCapable && PowerEnabled)
         ToggleAbilityInt(true);
 }
 
 if (PowerActive)
 {
-    if (!Person.transform.Find(LimbList.head).GetComponent<LimbBehaviour>().IsConsideredAlive && PowerEnabled)
+    if (!LimbList.FindLimbBeh(transform, LimbList.head).IsConsideredAlive && PowerEnabled)
         TogglePowerInt(false);
-    else if (Person.transform.Find(LimbList.head).GetComponent<LimbBehaviour>().IsConsideredAlive && !PowerEnabled)
+    else if (LimbList.FindLimbBeh(transform, LimbList.head).IsConsideredAlive && !PowerEnabled)
         TogglePowerInt(true);
 }
 ```
-I'll quickly summarize it in  wors here:
+I'll quickly summarize how it works here:
 
-If both Power And Abilities are toggled off, do nothing
+If both Power And Abilities are inactive, do nothing
 
-
-Else, if Ability is toggled on:
+Else...<br/>
+if Ability is active:
 - If person is unconscious and Ability wasn't disabled yet, disable them
 - Else if person is conscious and Ability wasn't enabled yet and Power is enabled, enable them
 
-If Power is toggled on:
+If Power is active:
 - If the head is dead and power wasn't disabled yet, disable it.
 - Else if the head is alive and power wasn't enabled yet, enable it.
 
@@ -986,12 +1040,12 @@ public class FireTouch : Ability
     public void Start()
     {
         TexturePlus.CreateLightSprite(
-            armLight = new GameObject("ArmLight"),
+            out armLight,
             transform,
             UniversalAssets.powerLight,
             Vector2.zero,
             powerColor,
-            armGlow = TexturePlus.InstantiateLight(armLight.transform),
+            out armGlow,
             5f,
             0.75f
         );

@@ -18,15 +18,16 @@ namespace StudioPlusAPI
 {
     public struct TexturePlus
     {
-        public static void CreateLightSprite(GameObject lightObject, Transform parentObject, Sprite sprite, Vector2 position, Color color)
+        public static void CreateLightSprite(out GameObject lightObject, Transform parentObject, Sprite sprite, Vector2 position, Color color)
         {
+            lightObject = new GameObject("Light");
             lightObject.transform.SetParent(parentObject);
             lightObject.transform.rotation = parentObject.rotation;
             lightObject.transform.localPosition = position;
             lightObject.transform.localScale = Vector2.one;
 
             var lightSprite = lightObject.AddComponent<SpriteRenderer>();
-            lightSprite.sprite = sprite; //THIS SPRITE NEEDS TO BE FULLY WHITE OR ELSE YOU'RE GONNA GET WEIRD EFFECTS
+            lightSprite.sprite = sprite; //This sprite should be a shade of white, or else the re-coloring will act weird
             lightSprite.material = ModAPI.FindMaterial("VeryBright");
 
             lightSprite.color = color;
@@ -34,27 +35,27 @@ namespace StudioPlusAPI
             lightSprite.sortingOrder = parentObject.GetComponent<SpriteRenderer>().sortingOrder + 1;
         }
         
-        public static void CreateLightSprite(GameObject lightObject, Transform parentObject, Sprite sprite, Vector2 position, Color color, LightSprite glow, float radius = 5f, float brightness = 1.5f)
+        public static void CreateLightSprite(out GameObject lightObject, Transform parentObject, Sprite sprite, Vector2 position, Color color, out LightSprite glow, float radius = 5f, float brightness = 1.5f)
         {
+            lightObject = new GameObject("Light");
             lightObject.transform.SetParent(parentObject);
             lightObject.transform.rotation = parentObject.rotation;
             lightObject.transform.localPosition = position;
             lightObject.transform.localScale = Vector2.one;
 
             var lightSprite = lightObject.AddComponent<SpriteRenderer>();
-            lightSprite.sprite = sprite; //THIS SPRITE NEEDS TO BE FULLY WHITE OR ELSE YOU'RE GONNA GET WEIRD EFFECTS
+            lightSprite.sprite = sprite; //This sprite should be a shade of white, or else the re-coloring will act weird
             lightSprite.material = ModAPI.FindMaterial("VeryBright");
 
             lightSprite.color = color;
             lightSprite.sortingLayerName = parentObject.GetComponent<SpriteRenderer>().sortingLayerName;
             lightSprite.sortingOrder = parentObject.GetComponent<SpriteRenderer>().sortingOrder + 1;
 
+            glow = ModAPI.CreateLight(lightObject.transform, ChangeAlpha(color), radius, brightness);
             glow.transform.localPosition = Vector3.zero;
-            glow.Color = ChangeAlpha(color);
-            glow.Radius = radius;
-            glow.Brightness = brightness;
         }
 
+        [Obsolete]
         public static LightSprite InstantiateLight(Transform parent)
         {
             var component = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/ModLightPrefab"), parent).GetComponent<LightSprite>();

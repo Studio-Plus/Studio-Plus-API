@@ -51,17 +51,17 @@ namespace StudioPlusAPI
 
             if (AbilityActive)
             {
-                if (Person.Consciousness < 0.8f && AbilityEnabled)
+                if (AbilityEnabled && !LimbList.FindLimbBeh(transform, LimbList.head).IsCapable)
                     ToggleAbilityInt(false);
-                else if (Person.Consciousness >= 0.8f && !AbilityEnabled && PowerEnabled)
+                else if (!AbilityEnabled && LimbList.FindLimbBeh(transform, LimbList.head).IsCapable && PowerEnabled)
                     ToggleAbilityInt(true);
             }
 
             if (PowerActive)
             {
-                if (!Person.transform.Find(LimbList.head).GetComponent<LimbBehaviour>().IsConsideredAlive && PowerEnabled)
+                if (!LimbList.FindLimbBeh(transform, LimbList.head).IsConsideredAlive && PowerEnabled)
                     TogglePowerInt(false);
-                else if (Person.transform.Find(LimbList.head).GetComponent<LimbBehaviour>().IsConsideredAlive && !PowerEnabled)
+                else if (LimbList.FindLimbBeh(transform, LimbList.head).IsConsideredAlive && !PowerEnabled)
                     TogglePowerInt(true);
             }
         }

@@ -67,12 +67,12 @@ public class FireTouch : Ability
     public void Start()
     {
         TexturePlus.CreateLightSprite(
-            armLight = new GameObject("ArmLight"),
+            out armLight,
             transform,
             UniversalAssets.powerLight,
             Vector2.zero,
             powerColor,
-            armGlow = TexturePlus.InstantiateLight(armLight.transform),
+            out armGlow,
             5f,
             0.75f
         );

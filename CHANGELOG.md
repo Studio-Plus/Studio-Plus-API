@@ -1,5 +1,16 @@
 # STUDIO PLUS API CHANGELOG
 
+## v3.2.0 (12th May 2023)
+- Fixed CreateLightSprite, now it doesn't require you to initialize the GameObject and LightSprite variables within the method (See documentation for further details). Finally
+  - Since InstantiateLight lost purpose, it is now marked as obsolete
+- Uncommented CreateItemStatic, but marked it as obsolete
+- If FindLimb is supplied with a GameObject, it will return a GameObject instead of a Transform
+- Added FindLimbBeh (Basically FindLimb but returns LimbBehaviour instead)
+- Added FindLimbComp (See documentation)
+- Fixed some minor bugs with PowerPlus
+  - As part of fixing minor bugs, since this updated breaks CreateLightSprite (Hence it being an update, not a patch), those were fixed as well. All mods in this repository are up-to-date with the API usually. Can't say that about the steam workshop...
+- Fiksed som gramatikal mistejks in te dokjumentary
+
 ## v3.1.3 (9th May 2023)
 - Added WaveClamp01() and WaveClamp() (See documentation)
 - Added TexturePlus.ToFloat and TexturePlus.ToByte (Again, see documentation)
