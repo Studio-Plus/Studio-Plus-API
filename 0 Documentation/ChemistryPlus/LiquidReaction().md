@@ -1,7 +1,7 @@
 # StudioPlusAPI
 ## ChemistryPlus
 ### LiquidReaction() 
-This method allows to add a liquid to an already existing item. Contains 3 overloads.<br/>
+This method allows you to make liquids combine into 1. Contains 3 overloads.<br/>
 ```cs
 public static void LiquidReaction(string liquid1, string liquid2, string target, float ratePerSecond = 0.05f)
 
