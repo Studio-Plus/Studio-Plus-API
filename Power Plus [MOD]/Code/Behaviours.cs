@@ -129,8 +129,8 @@ namespace Mod
             );
             eyeLight.SetActive(PowerEnabled);
 
-            Abilities.Add(LimbList.FindLimb(Limb.transform, LimbList.lowerArmFront).gameObject.GetOrAddComponent<FireTouch>());
-            Abilities.Add(LimbList.FindLimb(Limb.transform, LimbList.lowerArmBack).gameObject.GetOrAddComponent<FireTouch>());
+            Abilities.Add(Person.FindLimb(LimbList.lowerArmFront).gameObject.GetOrAddComponent<FireTouch>());
+            Abilities.Add(Person.FindLimb(LimbList.lowerArmBack).gameObject.GetOrAddComponent<FireTouch>());
         }
   
         protected override void TogglePower(bool toggled)

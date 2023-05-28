@@ -16,8 +16,9 @@
       "StudioPlusAPI/CreationPlus.cs",
       "StudioPlusAPI/PlusAPI.cs",
       "StudioPlusAPI/ArmorBehaviour.cs",
-      "StudioPlusAPI/PowerPlus.cs"
-    ],
+      "StudioPlusAPI/PowerPlus.cs",
+      "StudioPlusAPI/RegenerationPlus.cs"
+  ],
   "Active": false,
   "UGCIdentity": null,
   "CreatorUGCIdentity": null

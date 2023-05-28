@@ -1,5 +1,37 @@
 # STUDIO PLUS API CHANGELOG
 
+## v4.0.0 (28th May 2023)
+### General
+- Added a new module: RegenerationPlus
+- All structs now changed to static classes because...
+- ...StudioPlusAPI now uses extension methods. This has some consequences:
+  - Lots of methods got moved into PlusAPI because they became too general for their module (for example ChangeAlpha())
+  - Some methods (most notably FindLimb) got changed severly to fit as an extension method, so some methods from v3 may not be compatible with methods from v3, but new edition number should probably be warning enough that these 2 versons may not be compatible. Check documentation for changes.
+  - Any changes related to extensions will mostly not be mentioned. Refer to documentation to figure out how to use new methods
+- Method errors are now all done by throw new Exception() and the message has following format: "MethodName: This and that won't work because of so and so"
+### ChemistryPlus:
+- Added ChemistryPlus.AddBottleOpening(this BloodContainer container) [Check documentation]
+### TexturePlus:
+- Added TexturePlus.SetBodyTexturesArray(this PersonBehaviour) _("this" means that it's an extension method of in this case PersonBehaviour)_ [Check documentation]
+- Added TexturePlus.SetHealthBarColor(this LimbBehaviour & this PersonBehaviour) and TexturePlus.ResetHealthBarColor(this LimbBehaviour & this PersonBehaviour) [Check documentation]
+- Slightly modified TexturePlus.CreateLightSprite() [Check documentation]
+- Removed TexturePlus.InstantiateLight() while I have an excuse to (edition number change, non-compatibility is not an issue)
+- Generalized TexturePlus.ChangeAlpha(), thus it's now PlusAPI.ChangeAlpha()
+### CreationPlus:
+- Added CreationPlus.CreateDebris() [Check documentation]
+- Addec CreationPlus.CreateParticles() [Check documentation]
+- Finally fully fixed CreationPlus.SpawnItem()
+### PlusAPI:
+- Added PlusAPI.Inv(this float) (Inverse, inverses numbers, e.g. 10 becomes 1/10) [Check documentation]
+- Polished PlusAPI.ToFloat() and PlusAPI.ToByte()
+- Added PlusAPI.GetAbs(this Vector2 & this Vector3) [Check documentation]
+- Added PlusAPI.Talk(this PhysicalBehaviour) [Check documentation]
+- Radically changed LimbList.FindLimb(this PersonBehaviour) [Check documentation]
+### PowerPlus:
+- Made PowerPlus class way less confusing and adjusted it to v4 method changes
+### ArmorBehaviour:
+- Surprisingly, ArmorBehaviour remains unchanged
+
 ## v3.2.1 (12th May 2023)
 - For PowerPlus, if a limb in the Ability list is dead, its powers will turn off (see documentation for details)
 

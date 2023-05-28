@@ -9,6 +9,8 @@ using TMPro;
 using UnityEngine.Events;
 using StudioPlusAPI;
 using System.Threading;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 //StudioPlusAPI is an API for the game people playground, created by Dawid23 Gamer and Studio Plus. It allows for modders to program mods for the game more easily, or at least that's the idea. 
 //This API is released under the zlib license, by using it for your mod and/or downloading it you confirm that you read and agreed to the terms of said license.
@@ -17,7 +19,7 @@ using System.Threading;
 
 namespace StudioPlusAPI
 {
-    public struct PlusAPI
+    public static class PlusAPI
     {
         public const float ton = 25f;
         public const float kilogram = 0.025f;
@@ -28,7 +30,7 @@ namespace StudioPlusAPI
         public const float flask = liter;
         public const float bloodTank = 5f * liter;
 
-        public static void IgnoreEntityCollision(Collider2D main, Collider2D[] others, bool ignColl, bool affectItself = false)
+        public static void IgnoreEntityCollision(this Collider2D main, Collider2D[] others, bool ignColl, bool affectItself = false)
         {
             foreach (Collider2D a in others)
             {
@@ -42,7 +44,7 @@ namespace StudioPlusAPI
         }
 
 
-        public static void IgnoreCollision(Collider2D main, Collider2D other, bool ignColl)
+        public static void IgnoreCollision(this Collider2D main, Collider2D other, bool ignColl)
         {
             IgnoreCollisionStackController.IgnoreCollisionSubstituteMethod(main, other, ignColl);
         }
@@ -55,7 +57,7 @@ namespace StudioPlusAPI
         public static float WaveClamp(float num, float period, float maxNum)
         {
             if (maxNum == 0)
-                throw new ArgumentException("WaveClamp's maxNum cannot equal 0");
+                throw new ArgumentException("WaveClamp: maxNum cannot equal 0");
             float trueMaxNum = Mathf.Abs(maxNum);
             return trueMaxNum * (-0.5f * Mathf.Cos(num * Mathf.PI / period) + 0.5f);
         }
@@ -63,14 +65,67 @@ namespace StudioPlusAPI
         public static float WaveClamp(float num, float period, float maxNum, float minNum)
         {
             if (maxNum == minNum)
-                throw new ArgumentException("WaveClamp's maxNum and minNum cannot be equal");
+                throw new ArgumentException("WaveClamp: maxNum and minNum cannot be equal");
             float trueMaxNum = maxNum > minNum ? maxNum : minNum;
             float trueMinNum = maxNum > minNum ? minNum : maxNum;
             return (trueMaxNum - trueMinNum) * (-0.5f * Mathf.Cos(num * Mathf.PI / period) + 0.5f) + trueMinNum;
         }
+
+
+        public static float ToFloat(this byte value)
+        {
+            float newValue = value;
+            float returnValue = newValue / 255f;
+            return Mathf.Clamp01(returnValue);
+        }
+
+        public static byte ToByte(this float value)
+        {
+            float newValue = Mathf.Clamp01(value) * 255f;
+            return (byte)newValue;
+        }
+
+
+        public static Color ChangeAlpha(this Color color, float alpha)
+        {
+            return new Color(color.r, color.g, color.b, alpha);
+        }
+
+        public static Color32 ChangeAlpha(this Color32 color, byte alpha)
+        {
+            return new Color32(color.r, color.g, color.b, alpha);
+        }
+
+
+        public static float Inv(this float num)
+        {
+            if (num == 0f) 
+                return 0f;
+            if (num == 1f)
+                return 1f;
+            return 1f / num;
+        }
+
+
+        public static Vector2 GetAbs(this Vector2 originalVector)
+        {
+            return new Vector2(Mathf.Abs(originalVector.x), Mathf.Abs(originalVector.y));
+        }
+
+        public static Vector3 GetAbs(this Vector3 originalVector)
+        {
+            return new Vector3(Mathf.Abs(originalVector.x), Mathf.Abs(originalVector.y), Mathf.Abs(originalVector.z));
+        }
+
+
+        public static void Talk(this PhysicalBehaviour phys, object message, AudioClip clip)
+        {
+            phys.PlayClipOnce(clip);
+            ModAPI.Notify(message);
+        }
     }
 
-    public struct LimbList
+    public static class LimbList
     {
         public const string head = "Head";
 
@@ -99,34 +154,14 @@ namespace StudioPlusAPI
         public const string lowerLeg = lowerLegBack;
         public const string foot = footBack;
 
-        public static Transform FindLimb(Transform transform, string limbType)
+        public static LimbBehaviour FindLimb(this PersonBehaviour person, string limbType)
         {
-            return transform.root.Find(limbType);
+            return person.FindLimbComp<LimbBehaviour>(limbType);
         }
 
-        public static GameObject FindLimb(GameObject gameObject, string limbType)
+        public static T FindLimbComp<T>(this PersonBehaviour person, string limbType) where T : MonoBehaviour
         {
-            return gameObject.transform.root.Find(limbType).gameObject;
-        }
-
-        public static LimbBehaviour FindLimbBeh(Transform transform, string limbType)
-        {
-            return FindLimbComp<LimbBehaviour>(transform, limbType);
-        }
-
-        public static LimbBehaviour FindLimbBeh(GameObject gameObject, string limbType)
-        {
-            return FindLimbComp<LimbBehaviour>(gameObject, limbType);
-        }
-
-        public static T FindLimbComp<T>(Transform transform, string limbType) where T : MonoBehaviour
-        {
-            return transform.root.Find(limbType).GetComponent<T>();
-        }
-
-        public static T FindLimbComp<T>(GameObject gameObject, string limbType) where T : MonoBehaviour
-        {
-            return gameObject.transform.root.Find(limbType).GetComponent<T>();
+            return person.transform.root.Find(limbType).GetComponent<T>();
         }
     }
 }

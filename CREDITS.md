@@ -1,9 +1,9 @@
 # CREDITS
 
-## VERSION: v3.2.1
+## VERSION: v4.0.0
 
 ## DIRECTORS
-- Main Director - Dawid23_Gamer [S+, LD]
+- Main Director - Dawid23_Gamer [S+, LD; Int Team]
 - Co-Director - 
   - pjstarr12 [S+, LD]
   - apelmoes [S+, LD]
@@ -24,9 +24,10 @@
 - Additional help from Aspa102 [PPG Contract Programmer:tm:] and from the fine people of the studio minus server
 - Partially inspired with cheese.
 - Special thanks and shout-out to ChatGPT for helping me out that one time at 11 PM when I was half-asleep and unable to find a solution to a problem
+- Special thanks to Int Team for inspiring some very needed changes to this API, like fixing SpawnItem, adding of CreateParticles (and CreateDebris) as well as helping me discover extension methods to make the API 100x more user-friendly
 
 <!-- Quick list of all developers and other phrases
-Dawid23 Gamer [S+, LD]
+Dawid23 Gamer [S+, LD; Int Team]
 pjstarr12 [S+, LD]
 apelmoes [S+, LD]
 MonGamer2096 [S+, JD]

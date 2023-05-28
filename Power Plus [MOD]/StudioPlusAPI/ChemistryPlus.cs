@@ -17,29 +17,26 @@ using StudioPlusAPI;
 namespace StudioPlusAPI
 {
     //Special thanks to pjstatt12 for creating AddLiquidToItem and the original LiquidReaction and TripleLiquidReaction!
-    public struct ChemistryPlus
+    public static class ChemistryPlus
     {
-        public static void AddLiquidToItem(string item, string newLiquidID, float amount)
+        public static void AddLiquidToItem(this SpawnableAsset item, string newLiquidID, float amount)
         {
-            ModAPI.FindSpawnable(item).Prefab.AddComponent<FlaskBehaviour>();
-            ModAPI.FindSpawnable(item).Prefab.GetComponent<FlaskBehaviour>().Capacity = amount;
-            ModAPI.FindSpawnable(item).Prefab.GetComponent<FlaskBehaviour>().StartLiquid = new BloodContainer.SerialisableDistribution
+            item.Prefab.AddComponent<FlaskBehaviour>();
+            item.Prefab.GetComponent<FlaskBehaviour>().Capacity = amount;
+            item.Prefab.GetComponent<FlaskBehaviour>().StartLiquid = new BloodContainer.SerialisableDistribution
             {
                 LiquidID = newLiquidID,
                 Amount = amount
             };           
         }
 
-        public static void AddLiquidToItem(string item, string newLiquidID, float amount, float capacity)
+        public static void AddLiquidToItem(this SpawnableAsset item, string newLiquidID, float amount, float capacity)
         {
             if (amount > capacity)
-            {
-                Debug.LogError("StudioPlusAPI AddLiquidToItem(): Amount is larger than capacity may allow");
-                return;
-            }
-            ModAPI.FindSpawnable(item).Prefab.AddComponent<FlaskBehaviour>();
-            ModAPI.FindSpawnable(item).Prefab.GetComponent<FlaskBehaviour>().Capacity = capacity;
-            ModAPI.FindSpawnable(item).Prefab.GetComponent<FlaskBehaviour>().StartLiquid = new BloodContainer.SerialisableDistribution
+                throw new ArgumentException("AddLiquidToItem: Amount cannot exceed capacity!");
+            item.Prefab.AddComponent<FlaskBehaviour>();
+            item.Prefab.GetComponent<FlaskBehaviour>().Capacity = capacity;
+            item.Prefab.GetComponent<FlaskBehaviour>().StartLiquid = new BloodContainer.SerialisableDistribution
             {
                 LiquidID = newLiquidID,
                 Amount = amount
@@ -73,6 +70,15 @@ namespace StudioPlusAPI
         {
             var mixer = new LiquidMixInstructions(ingredientLiquids, target, ratePerSecond);
             LiquidMixingController.MixInstructions.Add(mixer);
+        }
+
+        public static PointLiquidTransferBehaviour AddBottleOpening(this BloodContainer container, Vector2 position, Space outerSpace = Space.Self)
+        {
+            PointLiquidTransferBehaviour cupOpening = container.gameObject.AddComponent<PointLiquidTransferBehaviour>();
+            cupOpening.Point = position;
+            cupOpening.Space = outerSpace;
+            cupOpening.Layers = ModAPI.FindSpawnable("Bottle").Prefab.GetComponent<PointLiquidTransferBehaviour>().Layers;
+            return cupOpening;
         }
     }
 }

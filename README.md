@@ -1,6 +1,8 @@
 # Studio-Plus-API
-## Current Version: v3.2.1
+## Current Version: v4.0.0
 This is an API for mods created by Studio Plus, open source because stuff like this should be open source.
+
+History repeats itself: v4.0.0 as an update is so massive and needs to be published ASAP so that evil mod can be released ASAP that I am going to update the documentation at a later date, hopefully tomorrow.
 
 There are 2 types of snippets in here:
 - [MOD] is an actual mod that you can throw into your mods folder

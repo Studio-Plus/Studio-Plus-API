@@ -29,7 +29,6 @@ namespace StudioPlusAPI
 
         public bool PowerActive { get; protected set; } = false;
         public bool AbilityActive { get; protected set; } = false;
-
         public bool IsCreated { get; protected set; } = false;
 
 
@@ -51,17 +50,17 @@ namespace StudioPlusAPI
 
             if (AbilityActive)
             {
-                if (AbilityEnabled && !LimbList.FindLimbBeh(transform, LimbList.head).IsCapable)
+                if (AbilityEnabled && !Person.FindLimb(LimbList.head).IsCapable)
                     ToggleAbilityInt(false);
-                else if (!AbilityEnabled && LimbList.FindLimbBeh(transform, LimbList.head).IsCapable && PowerEnabled)
+                else if (!AbilityEnabled && Person.FindLimb(LimbList.head).IsCapable && PowerEnabled)
                     ToggleAbilityInt(true);
             }
 
             if (PowerActive)
             {
-                if (!LimbList.FindLimbBeh(transform, LimbList.head).IsConsideredAlive && PowerEnabled)
+                if (!Person.FindLimb(LimbList.head).IsConsideredAlive && PowerEnabled)
                     TogglePowerInt(false);
-                else if (LimbList.FindLimbBeh(transform, LimbList.head).IsConsideredAlive && !PowerEnabled)
+                else if (Person.FindLimb(LimbList.head).IsConsideredAlive && !PowerEnabled)
                     TogglePowerInt(true);
             }
         }
@@ -77,7 +76,7 @@ namespace StudioPlusAPI
 
         //This method adds everything to the entity, like light sprites, strength, ability classes, etc.
         protected void CreatePowerInt()
-        {       
+        {
             if (!IsCreated)
             {
                 PowerActive = true;
@@ -91,17 +90,9 @@ namespace StudioPlusAPI
         //This class turns *the power* on or off, as if the power was never there. Main use for when the one with power is killed, but so he can still be revived.
         protected void TogglePowerInt(bool toggled)
         {
-            switch (toggled)
-            {
-                case true:
-                    PowerEnabled = toggled;
-                    Debug.Log("Power Enabled!");
-                    break;
-                case false:
-                    PowerEnabled = toggled;                  
-                    Debug.Log("Power Disabled!");                   
-                    break;
-            }
+            PowerEnabled = toggled;
+            string toggledString = toggled ? "Enabled" : "Disabled";
+            Debug.Log($"Power {toggledString}!");
             TogglePower(toggled);
             ToggleAbilityInt(toggled);
         }
@@ -109,25 +100,13 @@ namespace StudioPlusAPI
         //This class turns *abilities* on or off. Main use for when the one with power is knocked unconcsious
         protected void ToggleAbilityInt(bool toggled)
         {
-            switch (toggled)
+            AbilityEnabled = toggled;
+            foreach (Ability ability in Abilities)
             {
-                case true:
-                    AbilityEnabled = toggled;
-                    foreach (Ability ability in Abilities)
-                    {
-                        ability.enabled = toggled;
-                    }
-                    Debug.Log("Abilities Enabled!");
-                    break;
-                case false:
-                    AbilityEnabled = toggled;
-                    foreach (Ability ability in Abilities)
-                    {
-                        ability.enabled = toggled;
-                    }
-                    Debug.Log("Abilities Disabled!");
-                    break;
+                ability.enabled = toggled;
             }
+            string toggledString = toggled ? "Enabled" : "Disabled";
+            Debug.Log($"Abilities {toggledString}!");
             ToggleAbility(toggled);
         }
 
