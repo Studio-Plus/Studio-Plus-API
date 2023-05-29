@@ -1,11 +1,11 @@
 # StudioPlusAPI
-## TexturePlus
-### ReplaceItemSprite()
+## TexturePlus (REQUIRES PlusAPI)
+### ReplaceViewSprite()
 Part of the 'Advanced texture pack system', allows for replacing the view sprite.
 ```cs
-public static void ReplaceViewSprite(string item, Sprite replaceSprite)
+public static void ReplaceViewSprite(this SpawnableAsset item, Sprite replaceSprite)
 ```
 This one is straight forward and doesn't contain any overloads.
 ```cs
-TexturePlus.ReplaceItemSpriteOfChild("Sword", ModAPI.LoadSprite("Upscaled Sword View.png"));
+ModAPI.FindSpawnable("Sword").ReplaceViewSprite(ModAPI.LoadSprite("Upscaled Sword View.png"));
 ```

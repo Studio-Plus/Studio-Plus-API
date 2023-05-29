@@ -1,5 +1,5 @@
 # StudioPlusAPI
-## PowerPlus (PlusAPI HIGHLY recommended)
+## PowerPlus (REQUIRES PlusAPI)
 ### public abstract class PowerPlus : MonoBehaviour
 Allows you to gift humans with power.<br/>
 This class is a beautiful and perfect mesh of being simple for you, the modder, to use, yet also being the most advanced piece of code I've written up to date, so this documentation will be split into 2 parts:
@@ -136,17 +136,17 @@ if (!PowerActive && !AbilityActive)
 
 if (AbilityActive)
 {
-    if (AbilityEnabled && !LimbList.FindLimbBeh(transform, LimbList.head).IsCapable)
+    if (AbilityEnabled && !Person.FindLimb(LimbList.head).IsCapable)
         ToggleAbilityInt(false);
-    else if (!AbilityEnabled && LimbList.FindLimbBeh(transform, LimbList.head).IsCapable && PowerEnabled)
+    else if (!AbilityEnabled && Person.FindLimb(LimbList.head).IsCapable && PowerEnabled)
         ToggleAbilityInt(true);
 }
 
 if (PowerActive)
 {
-    if (!LimbList.FindLimbBeh(transform, LimbList.head).IsConsideredAlive && PowerEnabled)
+    if (!Person.FindLimb(LimbList.head).IsConsideredAlive && PowerEnabled)
         TogglePowerInt(false);
-    else if (LimbList.FindLimbBeh(transform, LimbList.head).IsConsideredAlive && !PowerEnabled)
+    else if (Person.FindLimb(LimbList.head).IsConsideredAlive && !PowerEnabled)
         TogglePowerInt(true);
 }
 ```
@@ -172,25 +172,13 @@ The details of how they exactly work and what they do is kinda boring and unnece
 //This class turns *abilities* on or off. Main use for when the one with power is knocked unconcsious
 protected void ToggleAbilityInt(bool toggled)
 {
-    switch (toggled)
+    AbilityEnabled = toggled;
+    foreach (Ability ability in Abilities)
     {
-        case true:
-            AbilityEnabled = toggled;
-            foreach (Ability ability in abilities)
-            {
-                ability.enabled = toggled;
-            }
-            Debug.Log("Abilities Enabled!");
-            break;
-        case false:
-            AbilityEnabled = toggled;
-            foreach (Ability ability in abilities)
-            {
-                ability.enabled = toggled;
-            }
-            Debug.Log("Abilities Disabled!");
-            break;
+        ability.enabled = toggled;
     }
+    string toggledString = toggled ? "Enabled" : "Disabled";
+    Debug.Log($"Abilities {toggledString}!");
     ToggleAbility(toggled);
 }
 ```
@@ -208,4 +196,4 @@ protected void OnDestroy()
     DeletePower();
 }
 ```
-The only thing that needs to be done when Power is deleted is deleting the ability classes. Everything else is defined by the subclass
+The only thing that needs to be done when Power is deleted is deleting the ability classes. Everything else is defined by the abstract class.

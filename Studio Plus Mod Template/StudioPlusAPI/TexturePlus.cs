@@ -114,7 +114,7 @@ namespace StudioPlusAPI
             item.ViewSprite = replaceSprite;
         }
 
-        public static void SetBodyTexturesArray(this PersonBehaviour person, Texture2D[] textures, float scale = 1f, int offset = 0)
+        public static void SetBodyTextures(this PersonBehaviour person, Texture2D[] textures, float scale = 1f, int offset = 0)
         {
             if (textures.Length < 3)
                 throw new ArgumentException("SetBodyTexturesArray: Too few body textures in array!");

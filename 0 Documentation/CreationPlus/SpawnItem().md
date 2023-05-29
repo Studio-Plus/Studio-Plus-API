@@ -1,12 +1,12 @@
 # StudioPlusAPI
-## CreationPlus
+## CreationPlus (REQUIRES PlusAPI)
 ### SpawnItem()
 Finally going into detail with this one.<br/>
 Allows you to spawn another item.
 ```cs
-public static GameObject SpawnItem(SpawnableAsset item, Transform parent, Vector3 position = default, bool spawnSpawnParticles = false)
+public static GameObject SpawnItem(SpawnableAsset item, Transform transform, Vector3 position = default, bool spawnSpawnParticles = false)
 ```
-The way it works is that it doesn't actually make the object the child of the Transform you put in (typical programmer bad variable naming), but it spawns the item in rotated to align with the said item and at the position of said item unless specified otherwise with the position parameter.<br/>
+The way it works is that it spawns the item in, rotated to align with the specified transform and at the position of said item moved accordingly as defined in the position parameter.<br/>
 Here are some examples:<br/>
 Example 1:
 ```cs

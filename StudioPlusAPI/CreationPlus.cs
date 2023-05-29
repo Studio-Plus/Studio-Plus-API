@@ -100,7 +100,7 @@ namespace StudioPlusAPI
         }
 
 
-        public static GameObject CreateDebris(string name, Transform parent, Sprite sprite, Vector2 position)
+        public static GameObject CreateDebris(string name, Transform parent, Sprite sprite, Vector2 position = default)
         {
             Quaternion vectorRotation = parent.lossyScale.x < 0f ? Quaternion.Euler(0f, 0f, 180f) * parent.rotation : parent.rotation;
             GameObject myGameObject = ModAPI.CreatePhysicalObject(name, sprite);
@@ -113,9 +113,9 @@ namespace StudioPlusAPI
         }
 
 
-        public static ParticleSystem CreateParticles(GameObject item, Transform parent, Vector2 position, Quaternion rotation)
+        public static ParticleSystem CreateParticles(GameObject item, Transform parent, Vector2 position = default, Quaternion rotation = default)
         {
-            GameObject particleObject = UnityEngine.Object.Instantiate(item, parent.position, rotation);
+            GameObject particleObject = UnityEngine.Object.Instantiate(item, parent.position, parent.rotation * rotation);
             particleObject.transform.SetParent(parent);
             particleObject.transform.localPosition = position;
             particleObject.transform.localScale = parent.localScale.GetAbs();

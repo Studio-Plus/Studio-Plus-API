@@ -12,7 +12,7 @@ using StudioPlusAPI;
 using static StudioPlusAPI.LimbList;
 ```
 It is not really used in the API itself for simplicity's sake, but if you're annoyed of typing 'LimbList' in front of a lot of things, this will make it so you don't have to add it because C# will know that it's meant to be there.<br/>
-You can also do this to other structs.
+You can also do this to other structs and static classes.
 
 #### Limb List
 LimbList contains a list of every single Limb transform ever:
@@ -52,75 +52,56 @@ var lowerArmFront = Instance.transform.Find(LimbList.lowerArmFront);
 Notice how when this variable is named the same way the limb in this list is, copy-pasting this line for different limbs becomes a very easy Job.
 
 #### LimbList.FindLimb()
-Speaking of Find, this struct also contains a method that returns the child transform by giving in 2 parameters (Contains 2 overloads):
+Speaking of Find, this struct also contains a method that makes finding limbs easier (Contains 3 overloads):
 ```cs
-public static Transform FindLimb(Transform transform, string limbType)
+public static LimbBehaviour FindLimb(this PersonBehaviour person, string limbType)
 
-public static GameObject FindLimb(GameObject gameObject, string limbType)
+public static LimbBehaviour FindLimb(this LimbBehaviour limb, string limbType)
+
+public static LimbBehaviour FindLimb(this CirculationBehaviour circ, string limbType)
+```
+While it is reliant on a reference to PersonBehaviour and returns LimbBehaviour, it's still useful for a lot of cases. Here is an example
+```cs
+PersonBehaviour person = Instance.GetComponent<PersonBehaviour>();
+person.FindLimb(LimbList.lowerArmFront);
+```
+If you only got a limb reference, you can simply use the 2nd overload
+```cs
+LimbBehaviour limb;
+
+public void Start()
+{
+    limb = GetComponent<LimbBehaviour>();
+    var lowerArmFront = limb.FindLimb(LimbList.lowerArmFront);
+}
+```
+If for some strange reason you only got a CirculationBehaviour reference, overload 3 is your friend:
+```cs
+public override void OnUpdate(BloodContainer container)
+{
+    if (container is CirculationBehaviour circ)
+    {
+        var lowerArmFront = circ.FindLimb(LimbList.lowerArmFront);
+    }
+}
 ```
 
-Here's the example from above but done with this method:
-```cs
-var lowerArmFront = LimbList.FindLimb(Instance.transform, LimbList.lowerArmFront);
-```
-
-Wihle this is longer than what we started with, if you use the recommended line at the beginning of the entry, it would look more like this:
-```cs
-//at the beginning of your file
-//using static StudioPlusAPI.LimbList;
-
-var lowerArmFront = FindLimb(Instance.transform, lowerArmFront);
-```
-
-As you can see, this is now actually shorter than what we started with, but we could in theory make it even shorter:
-```cs
-//at the beginning of your file
-//using static StudioPlusAPI.LimbList;
-
-var lowerArmFront = FindLimb(Instance, lowerArmFront);
-```
-
-Instance is nothing other than a GameObject, so you don't actually have to get its transform in order for it to work.<br/>
-The most significant difference however is that this will return a GameObject instead. Use whatever will make the code shorter, here is a short cheatsheet:
-```cs
-//at the beginning of your file
-//using static StudioPlusAPI.LimbList;
-//In general, use the version below in a block (Note that depending on what you're doing this may not apply)
-
-FindLimb(Instance.transform, lowerArmFront).gameObject.AddComponent<MyComponent>();
-FindLimb(Instance, lowerArmFront).AddComponent<MyComponent>();
-
-FindLimb(Instance.transform, lowerArmFront).GetComponent<MyComponent>();
-FindLimb(Instance, lowerArmFront).GetComponent<MyComponent>();
-
-FindLimb(gameObject, lowerArmFront).GetComponent<MyComponent>();
-FindLimb(transform, lowerArmFront).GetComponent<MyComponent>();
-```
-
-In addition, the method always first goes to the root of the transform before attempting to find the transform/gameObject, so the following 2 expressions function the same:
-```cs
-var lowerArmFront = LimbList.FindLimb(limb.transform.root, LimbList.lowerArmFront).GetComponent<MyComponent>();
-var lowerArmFront = LimbList.FindLimb(limb.transform, LimbList.lowerArmFront).GetComponent<MyComponent>();
-```
-#### LimbList.FindLimbBeh()
-Often will the search for a limb transform also require you to Get its LimbBehaviour Component. Luckily, we got a method that makes this process shorter (Contains 2 overloads):
-```cs
-public static LimbBehaviour FindLimb(Transform transform, string limbType)
-
-public static LimbBehaviour FindLimb(GameObject gameObject, string limbType)
-```
-By adding 3 letters, you can eliminate the need of typing GetComponent for the LimbBehaviour
-
+This is way easier to follow than what we started with and has the bonus of returning LimbBehaviour which will often save on code, because for 75% of the cases you're getting the transform of a limb to get to LimbBehaviour, very rarely will you need an implicit transform reference.
 #### LimbList.FindLimbComp()
-Similar in spirit to FindLimbBeh but generalized to any component on the limb (Contains 2 overloads):
+To follow up on the previous statement, for 24% of the cases you're trying to get another custom script from the limb. This method covers that 24% with the same 3 overload options:
 ```cs
-public static T FindLimbComp<T>(Transform transform, string limbType) where T : MonoBehaviour
+public static T FindLimbComp<T>(this PersonBehaviour person, string limbType) where T : MonoBehaviour
 
-public static T FindLimbComp<T>(GameObject gameObject, string limbType) where T : MonoBehaviour
+public static T FindLimbComp<T>(this LimbBehaviour limb, string limbType) where T : MonoBehaviour
+
+public static T FindLimbComp<T>(this CirculationBehaviour circ, string limbType) where T : MonoBehaviour
 ```
-By adding 4 letters this time, we can  yet  again spare us the time of writing GetComponent after finding the limb transform
+In fact, FindLimb() is a mere shorter way of writing all of these for LimbBehaviour. For all the cases above you can also write
 ```cs
-var lowerArmFront = LimbList.FindLimb(limb.transform, LimbList.lowerArmFront).GetComponent<MyComponent>();
-var lowerArmFront = LimbList.FindLimbComp<MyComponent>(limb.transform, LimbList.lowerArmFront);
+person.FindLimbComp<LimbBehaviour>(LimbList.lowerArmFront);
+
+var lowerArmFront = limb.FindLimbComp<LimbBehaviour>(LimbList.lowerArmFront);
+
+var lowerArmFront = circ.FindLimbComp<LimbBehaviour>(LimbList.lowerArmFront);
 ```
-Remember that this and the previous methods only work for **getting** a component, not for adding it. We won't be simplifying adding components here.
+Or you can replace LimbBehaviour with the script you're looking for.

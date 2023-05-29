@@ -1,26 +1,27 @@
-# StudioPlusAPI DOCUMENTATION (v4.0.1)
+# StudioPlusAPI LEGACY DOCUMENTATION (v3.2.1)
+This is the old version of the documentation in case anyone that decides not to transfer to v4.0.0 still needs help
 ## ChemistryPlus
 ### AddLiquidToItem() 
 This method allows to add a liquid to an already existing item. Contains 2 overloads.<br/>
 ```cs
-public static void AddLiquidToItem(this SpawnableAsset item, string newLiquidID, float amount)
+public static void AddLiquidToItem(string item, string newLiquidID, float amount)
 
-public static void AddLiquidToItem(this SpawnableAsset item, string newLiquidID, float amount, float capacity)
+public static void AddLiquidToItem(string item, string newLiquidID, float amount, float capacity)
 ```
 By default capacity is adjusted to the amount of liquid you add:
 ```cs
-ModAPI.FindSpawnable("Rotor").AddLiquidToItem(Oil.ID, 1.4f);
+ChemistryPlus.AddLiquidToItem("Rotor", Oil.ID, 1.4f);
 
 //ChemistryPlus.AddLiquidToItem("Rotor", "OIL", 1.4f);
 ```
 While using simple strings for the IDs of liquids is possible, using the ID stored in the actual class is recommended as it will be more resistant to breaking with updates to the game.<br/>
-For your convinience, a list of all liquid IDs will be provided in this documentation.
+For your convinience, a list of all liquid IDs will be provided in this folder.
 
 If you so wish, you can provide a capacity for the container (capacity must be larger than amount):
 ```cs
-ModAPI.FindSpawnable("Rotor").AddLiquidToItem(Oil.ID, 1.4f, 2.8f);
+ChemistryPlus.AddLiquidToItem("Rotor", Oil.ID, 1.4f, 2.8f);
 ```
-This is nearly useless, I know.
+This is basically useless, I know.
 
 ### LiquidReaction() 
 This method allows you to make liquids combine into 1. Contains 3 overloads.<br/>
@@ -56,20 +57,6 @@ ChemistryPlus.LiquidReaction(
 //If you're wondering, no, I'm not a Powerpuff Girls fan, it's just a fun example.
 ```
 It is not possible to mix e.g. 4 liquids into 2 with 1 API method, although it shouldn't be hard to implement something like this.
-
-### AddBottleOpening()
-This method allows you to add a bottle opening to any container.
-```cs
-public static PointLiquidTransferBehaviour AddBottleOpening(this BloodContainer container, Vector2 position, Space outerSpace = Space.Self)
-```
-It's important to note that BloodContainer class is the base class for all liquid containers, so you can also call it from FlaskBehaviour, CirculationBehaviour, etc.<br/>
-Returns PointLiquidTransferBehaviour in case you have to make any additional modifications.
-
-The argument outerSpace determines whether to use relative or absolute position for Space.Self and Space.World respectively. You will almost always want to use relative position so it defaults to Space.Self but what do I know about what kind of item you want to make?<br/>
-Here is an example of how to use it:
-```cs
-PointLiquidTransferBehaviour.bottleOpening = GetComponent<BloodContainer>().AddBottleOpening(new Vector2(-1f, 4.5f) * ModAPI.PixelSize);
-```
 
 ### Liquid ID List (for v1.26.6)
 When working with specific liquids in general, you should use a reference to the liquid class ID string instead of a plain string to avoid zooi's changes to any names causing your mods to break<br/>
@@ -126,19 +113,18 @@ This will be a list of every single liquid ID in people playground. This will al
 - Chemistry.InertLiquid.ID
 
 
-## TexturePlus (REQUIRES PlusAPI)
+## TexturePlus
 ### CreateLightSprite()
 This method allows for creation of complex light sprites. Contains 2 overloads.
 ```cs
-public static void CreateLightSprite(out GameObject lightObject, Transform parentObject, Sprite sprite, Vector2 position, Color color, bool activate = true)
+public static void CreateLightSprite(out GameObject lightObject, Transform parentObject, Sprite sprite, Vector2 position, Color color)
 
-public static void CreateLightSprite(out GameObject lightObject, Transform parentObject, Sprite sprite, Vector2 position, Color color, out LightSprite glow, float radius = 5f, float brightness = 1.5f, bool activate = true)
+public static void CreateLightSprite(out GameObject lightObject, Transform parentObject, Sprite sprite, Vector2 position, Color color, out LightSprite glow, float radius = 5f, float brightness = 1.5f)
 ```
 The difference between this and **ModAPI.CreateLight()** is that this method primarily focuses on creating a light __sprite__ instead of just a light:
 ```cs
-public class ExampleClass : MonoBehaviour
+ExampleClass : MonoBehaviour
 {
-    [SkipSerialisation]
     public GameObject light;
 
     public void Start()
@@ -157,11 +143,9 @@ When added to an object this will create a red glowing sprite (based on ExampleS
 
 Note that a simple Light Sprite does not glow in the dark, it only glows when there is light. If you wish to have a sprite that glows in the dark, use the following overload:
 ```cs
-public class ExampleClass : MonoBehaviour
+ExampleClass : MonoBehaviour
 {
-    [SkipSerialisation]
     public GameObject light;
-    [SkipSerialisation]
     public LightSprite glow;
 
     public void Start()
@@ -183,57 +167,6 @@ When added to an object this will create a red glowing sprite (based on ExampleS
 This overload is besically a merging of both TexturePlus.CreateLightSprite() and ModAPI.CreateLight()
 
 Note that for both cases, you have to write 'out' in front of the light and glow variable or else C# will be mad at you.
-
-There is also an optional 'activate' argument for both overloads. Set to true by default. When set to false, light will be turned off when created. It's mostly there in case the light's activation is dependant on either the script being enabled or some boolean being either true or false. Here are 2 examples:
-```cs
-public class ExampleClass : MonoBehaviour
-{
-    [SkipSerialisation]
-    public GameObject light;
-    [SkipSerialisation]
-    public LightSprite glow;
-
-    public void Start()
-    {
-        TexturePlus.CreateLightSprite(
-            out light,
-            Instance.transform,
-            ModAPI.LoadSprite("Textures/ExampleSprite.png"),
-            Vector2.zero,
-            new Color32(255, 0, 0, 127), //Alternative to Color struct, will also work here
-            out glow,
-            5f,
-            0.75f,
-            enabled //If the script is disabled when this is run, light will be off by default
-        );
-    }
-}
-
-public class MachineExampleClass : MonoBehaviour
-{
-    [SkipSerialisation]
-    public GameObject light;
-    [SkipSerialisation]
-    public LightSprite glow;
-
-    public bool activated = false;
-
-    public void Start()
-    {
-        TexturePlus.CreateLightSprite(
-            out light,
-            Instance.transform,
-            ModAPI.LoadSprite("Textures/ExampleSprite.png"),
-            Vector2.zero,
-            new Color32(255, 0, 0, 127), //Alternative to Color struct, will also work here
-            out glow,
-            5f,
-            0.75f,
-            activated //Assuming the script changes the value of activated, the method will either enable or disable the light accordingly
-        );
-    }
-}     
-```
 
 ### ChangeLightColor()
 Allows for ~~lazy~~ easy changing of your light sprite color. Contains 2 overloads.
@@ -264,26 +197,35 @@ TexturePlus.ChangeLightColor(
 ...<br/>
 Okay now this is just straight-up ridiculous, who even came up with this? Oh.
 
+### ChangeAlpha()
+Might as well mention it here. This method changes the alpha of a given color. Contains 2 overloads.
+```cs
+public static Color ChangeAlpha(Color color, float alpha = 1f)
+
+public static Color32 ChangeAlpha(Color32 color, byte alpha = 255)
+```
+By default it changes the alpha to the maximum (Either 1f or 255), but you can set it to whatever you want.
+
 ### ReplaceItemSprite()
 Part of the 'Advanced texture pack system', allows for replacing sprites under more or less any circumstance. Contains 5 overloads.
 ```cs
-public static void ReplaceItemSprite(this SpawnableAsset item, Sprite replaceTexture)
+public static void ReplaceItemSprite(string item, Sprite replaceTexture)
 
-public static void ReplaceItemSprite(this SpawnableAsset item, string childObject, Sprite childReplaceTexture)
+public static void ReplaceItemSprite(string item, string childObject, Sprite childReplaceTexture)
 
-public static void ReplaceItemSprite(this SpawnableAsset item, Sprite replaceTexture, string childObject, Sprite childReplaceTexture)
+public static void ReplaceItemSprite(string item, Sprite replaceTexture, string childObject, Sprite childReplaceTexture)
 
-public static void ReplaceItemSprite(this SpawnableAsset item, string[] childObjects, Sprite[] childReplaceSprites)
+public static void ReplaceItemSprite(string item, string[] childObjects, Sprite[] childReplaceSprites)
 
-public static void ReplaceItemSprite(this SpawnableAsset item, Sprite replaceSprite, string[] childObjects, Sprite[] childReplaceSprites)
+public static void ReplaceItemSprite(string item, Sprite replaceSprite, string[] childObjects, Sprite[] childReplaceSprites)
 ```
 The most basic version allows for replacing the sprite of regular items lke swords:
 ```cs
-ModAPI.FindSpawnable("Sword").ReplaceItemSprite(ModAPI.LoadSprite("Upscaled Sword.png"));
+TexturePlus.ReplaceItemSprite("Sword", ModAPI.LoadSprite("Upscaled Sword.png"));
 ```
 For items like the axe, if you want to specifically replace the sprite of the axe head, you'll have to do this:
 ```cs
-ModAPI.FindSpawnable("Axe").ReplaceItemSpriteOfChild("Axe handle/Axe head", ModAPI.LoadSprite("Futuristic Axe Head.png"));
+TexturePlus.ReplaceItemSpriteOfChild("Axe","Axe handle/Axe head", ModAPI.LoadSprite("Futuristic Axe Head.png"));
 ```
 You can get the path for childObject from [here (PPG modding wiki)](https://www.studiominus.nl/ppg-modding/gameAssets.html).<br/>
 Keep in mind that this won't work for changing the sprite of your modded axe head (probably). This is a texture pack system specifically made for vanilla items and it's not guaranteed it will work for modded items within your mod (It's another story for texture packs for other mods).<br/>
@@ -307,7 +249,8 @@ ModAPI.Register(
 
 In case there is a sprite on both the child and root of the item that you want to change, use the 3rd overload:
 ```cs
-ModAPI.FindSpawnable("Example Item").ReplaceItemSpriteOfChild(
+TexturePlus.ReplaceItemSpriteOfChild(
+    "Example Item", 
     ModAPI.LoadSprite("Sprite.png"), 
     "Child 1", 
     ModAPI.LoadSprite("Sprite 1.png")
@@ -315,7 +258,8 @@ ModAPI.FindSpawnable("Example Item").ReplaceItemSpriteOfChild(
 ```
 For advanced users, if you want to replace multiple sprites found in children of the root item, use 4th overload:
 ```cs
-ModAPI.FindSpawnable("Example Item").ReplaceItemSprite(
+TexturePlus.ReplaceItemSprite(
+    "Example Item",
     new string[]
     {
         "Child 1",
@@ -330,7 +274,8 @@ ModAPI.FindSpawnable("Example Item").ReplaceItemSprite(
 ```
 And there is of course a version of this for the case a sprite is in the root:
 ```cs
-ModAPI.FindSpawnable("Example Item").ReplaceItemSprite(
+TexturePlus.ReplaceItemSprite(
+    "Example Item",
     ModAPI.LoadSprite("Sprite.png");
     new string[]
     {
@@ -344,107 +289,47 @@ ModAPI.FindSpawnable("Example Item").ReplaceItemSprite(
     },
 );
 ```
-It's very important that you use an **equal** amount of children and sprites in the arrays in overload 4 and 5, otherwise the API is going to immediately throw an error
+It's very important that you use an **equal** amount of children and sprites in the arrays in overload 4 and 5, otherwise if I programmed it correctly the API is going to immediately terminate the execution of this method.
 
-### ReplaceViewSprite()
+### ReplaceItemSprite()
 Part of the 'Advanced texture pack system', allows for replacing the view sprite.
 ```cs
-public static void ReplaceViewSprite(this SpawnableAsset item, Sprite replaceSprite)
+public static void ReplaceViewSprite(string item, Sprite replaceSprite)
 ```
 This one is straight forward and doesn't contain any overloads.
 ```cs
-ModAPI.FindSpawnable("Sword").ReplaceViewSprite(ModAPI.LoadSprite("Upscaled Sword View.png"));
+TexturePlus.ReplaceItemSpriteOfChild("Sword", ModAPI.LoadSprite("Upscaled Sword View.png"));
+```
+### ToFloat()
+Changes a byte color (0 to 255) into its corresponding float. Clamped between 0f and 1f:
+```cs
+public static float ToFloat(byte value)
+{
+    float newValue = (float)value;
+    float returnValue = newValue / 255f;
+    return Mathf.Clamp01(returnValue);
+}
 ```
 
-### SetBodyTextures() (But custom!)
-This extension method allows you to input BodyTextures with the help of an array!
+### ToByte()
+Inverse operation of ToFloat, also clamped between 0 and 255:
 ```cs
-public static void SetBodyTextures(this PersonBehaviour person, Texture2D[] textures, float scale = 1f, int offset = 0)
+public static byte ToByte(float value)
+{
+    float newValue = Mathf.Clamp01(value) * 255f;
+    return (byte)newValue;
+}
 ```
-Before you use it though, there are specific conditions that you have to keep in mind:
-1. There must be at least 3 textures in the array.<br/>
-    For any textures that you don't want to use, you can enter null to compensate, like this:
-    ```cs
-    public Texture2D[] myBrokenTextures = new Texture2D
-    {
-        ModAPI.LoadTexture("skin layer.png"),
-        ModAPI.LoadTexture("flesh layer.png")
-    };
-
-    public Texture2D[] myTextures = new Texture2D
-    {
-        ModAPI.LoadTexture("skin layer.png"),
-        ModAPI.LoadTexture("flesh layer.png"),
-        null
-    };
-    var person = Instance.GetComponent<PersonBehaviour>();
-    /*
-    person.SetBodyTextures(myBrokenTextures);
-    //SetBodyTexturesArray: Too few body textures in array!
-    */   
-    //This won't throw you any errors
-    person.SetBodyTextures(myTextures);
-    ```
-1. The amount of textures in the array must be a multiple of 3. If it isn't, the mod will throw you an error.<br/> 
-    You can also compensate with null entries here
-1. The offset parameter describes the offset for texture groups. Texture groups are 3 consecutive textures, starting at the 1st item in the array.<br/> 
-    In the following example:
-    ```cs
-    public Texture2D[] myTextures = new Texture2D
-    {
-        ModAPI.LoadTexture("skin layer 1.png"),
-        null,
-        null,
-        ModAPI.LoadTexture("skin layer 2.png"),
-        ModAPI.LoadTexture("flesh layer 2.png"),
-        null,
-        ModAPI.LoadTexture("skin layer 3.png"),
-        ModAPI.LoadTexture("flesh layer 3.png"),
-        ModAPI.LoadTexture("bone layer 3.png")
-    };
-    var person = Instance.GetComponent<PersonBehaviour>();
-    person.SetBodyTextures(myTextures, 1f, 2);
-    ```
-    The textures won't be set to **null**, **skin layer 2** and **flesh layer 2** but instead will be set to **skin layer 3**, **flesh layer 3**, **bone layer 3**.
-    Keep this in mind to not cause any OutOfBounds exceptions.
-1. The offset parameter cannot be less than 0, this will also throw an error.
-
-### SetHealthBarColors()
-This method allows you to change the health bar color of any entity.
-```cs
-public static void SetHealthBarColors(this PersonBehaviour person, Color color)
-```
-There isn't exactly much to say here.
-```cs
-PersonBehaviour person = Instance.GetComponent<PersonBehaviour>();
-person.SetHealthBarColors(new Color32(200, 0, 255, 255));
-```
-There is also a method for resetting the health bar color back to normal:
-```cs
-public static void ResetHealthBarColors(this PersonBehaviour person)
-```
-```cs
-person.ResetHealthBarColors();
-//Default is new Color32(55, 255, 0, 255)
-```
-### SetHealthBarColor()
-Almost like SetHealthBarColors(), but for individual limbs. There is also a ResetHealthBarColor() method.
-```cs
-public static void SetHealthBarColor(this LimbBehaviour limb, Color color)
-
-public static void ResetHealthBarColor(this LimbBehaviour limb)
-```
-I don't think an example is in order. 
 
 
-## CreationPlus (REQUIRES PlusAPI)
+## CreationPlus
 ### SpawnItem()
 Finally going into detail with this one.<br/>
 Allows you to spawn another item.
 ```cs
-public static GameObject SpawnItem(SpawnableAsset item, Transform transform, Vector3 position = default, bool spawnSpawnParticles = false)
+public static GameObject SpawnItem(SpawnableAsset item, Transform parent, Vector3 position = default, bool spawnSpawnParticles = false)
 ```
-The way it works is that it spawns the item in, rotated to align with the specified transform and at the position of said item moved accordingly as defined in the position parameter.<br/>
+The way it works is that it doesn't actually make the object the child of the Transform you put in (typical programmer bad variable naming), but it spawns the item in rotated to align with the said item and at the position of said item unless specified otherwise with the position parameter.<br/>
 Here are some examples:<br/>
 Example 1:
 ```cs
@@ -480,54 +365,32 @@ It's the old SpawnItem method that spawns the item at a fixed point perfectly ro
 ### CreateFixedJoint()
 Creates a fixed joint between two objects. Contains 2 overloads.
 ```cs
-public static void CreateFixedJoint(this GameObject main, GameObject other)
+public static void CreateFixedJoint(GameObject main, GameObject other)
 
-public static void CreateFixedJoint(this GameObject main, GameObject other, Vector2 position)
+public static void CreateFixedJoint(GameObject main, GameObject other, Vector2 position)
 ```
 In other words, it creates a rigid connection between 2 objects.
 ```cs
-gameObject.CreateFixedJoint(myObject);
+CreationPlus.CreateFixedJoint(gameObject, myObject);
 ```
 If for any reason you have to change the position of said joint, you can use the overload:
 ```cs
-gameObject.CreateFixedJoint(myObject, new Vector2(0f, 3f) * ModAPI.PixelSize);
+CreationPlus.CreateFixedJoint(gameObject, myObject, new Vector2(0f, 3f) * ModAPI.PixelSize);
 ```
 
 ### CreateHingeJoint()
 Creates a hinge joint between two objects.
 ```cs
-public static void CreateHingeJoint(this GameObject main, GameObject other, Vector2 position, float minDeg, float maxDeg)
+public static void CreateHingeJoint(GameObject main, GameObject other, Vector2 position, float minDeg, float maxDeg)
 ```
 I don't think this needs further explanation, only an example:
 ```cs
-gameObject.CreateHingeJoint(myObject, new Vector2(0f, -4.5f) * ModAPI.PixelSize, -45f, 45f);
+CreationPlus.CreateHingeJoint(gameObject, myObject, new Vector2(0f, -4.5f) * ModAPI.PixelSize, -45f, 45f);
 ```
 I did not provide an overload that allows you to not need to input Vector2 because tbh why would you need to, but if you _really_ have to:
 ```cs
-gameObject.CreateHingeJoint(myObject, Vector2.zero, -45f, 45f);
+CreationPlus.CreateHingeJoint(gameObject, myObject, Vector2.zero, -45f, 45f);
 ```
-
-### CreateDebris()
-Creates a custom debris object.<br/>
-```cs
-public static GameObject CreateDebris(string name, Transform parent, Sprite sprite, Vector2 position)
-```
-This is a very specific method that was only added in here for convinience to use for another mod I made, so this might be completely useless outside of that very specific context, and that context also involes a class that is not contained in StudioPlusAPI.
-
-### CreateParticles()
-Creates particles.<br/>
-```cs
-public static ParticleSystem CreateParticles(GameObject item, Transform parent, Vector2 position = default, Quaternion rotation = default)
-```
-This is actually very useful unlike the last entry. You know how plates create cool custom particles and sound? What this method does is that it takes the broken plate prefab and removes any GameObjects so that only the particles remain. Here is how you do it for the previously mentioned example:
-```cs
-ParticleSystem particles = CreationPlus.CreateParticles(ModAPI.FindSpawnable("Plate").Prefab.GetComponent<DestroyableBehaviour>().DebrisPrefab, Instance.transform);
-```
-If positon parameter is left empty, the particles will play at the center of the object.<br/>
-The rotation parameter is a modifier, if left empty the rotation will simply equal the rotation of the parent transform.
-
-The method returns the ParticleSystem component in case you have to modify the particles in any way.
-
 
 ## PlusAPI
 ### PlusAPI.ton and PlusAPI.kilogram
@@ -571,9 +434,9 @@ public const float bloodTank = 5f * liter;
 ```
 
 ### IgnoreCollision()
-A short-hand way to write PPG's method for ignoring collision because I won't be typing IgnoreCollisionStackController.IgnoreCollisionSubstituteMethod() every time I want to do something with collisions. It also has the benefit of being an extension method to Collider2D
+A short-hand way to write PPG's method for ignoring collision because I won't be typing IgnoreCollisionStackController.IgnoreCollisionSubstituteMethod() every time I want to do something with collisions
 ```cs
-public static void IgnoreCollision(this Collider2D main, Collider2D other, bool ignColl)
+public static void IgnoreCollision(Collider2D main, Collider2D other, bool ignColl)
 {
     IgnoreCollisionStackController.IgnoreCollisionSubstituteMethod(main, other, ignColl);
 }
@@ -582,108 +445,11 @@ public static void IgnoreCollision(this Collider2D main, Collider2D other, bool 
 ### IgnoreEntityCollision()
 Allows you to disable collision with multiple colliders (usually entities).
 ```cs
-public static void IgnoreEntityCollision(this Collider2D main, Collider2D[] others, bool ignColl, bool affectItself = false)
+public static void IgnoreEntityCollision(Collider2D main, Collider2D[] others, bool ignColl, bool affectItself = false)
 ```
 Tbh Idr exactly how I got my hands on this, I think I stole it from PPG source code. Idk what affectItself does, I am too small brain to figure out what the complex if statement is about. Here's simply an example from ArmorBehaviour:
 ```cs
-GetComponent<Collider2D>().IgnoreEntityCollision(limbColliders, true);
-```
-
-### ChangeAlpha()
-This method changes the alpha of a given value. Contains 2 overloads.
-```cs
-public static Color ChangeAlpha(this Color color, float alpha)
-
-public static Color32 ChangeAlpha(this Color32 color, byte alpha)
-```
-For the first overload, alpha is clamped between 0f and 1f.<br/>
-It's the case for many methods here but I think this is the best one to mention it: This is a extension method so you can do something like this:
-```cs
-public Color32 exampleColor;
-
-exampleColor.ChangeAlpha(127);
-```
-
-### WaveClamp()
-A collection of a few special mathemagical functions that can be easily applied. We will be skipping over boring mathematical details and jump right into the mathemagic!<br/>
-Contains a total of 3 overloads:
-####  WaveClamp01()
-```cs
-public static float WaveClamp01(float num, float period)
-```
-This special overload that is actually its own method will interchangibly return a value between 0 and 1 given a periodic amount of time period and a self-incrementing value num.<br/>
-I assume only 0.1% of readers will understand what I mean so a quick example:
-```cs
-float timer = 0f;
-float myValue = 0f;
-
-public void FixedUpdate()
-{
-    myValue = PlusAPI.WaveClamp01(timer, 2f);
-    timer += Time.fixedDeltaTime;
-}
-```
-This method is mostly meant for these kinds of scenarios<br/>
-In this example, myValue will first be 0 and will start going upwards, then after 2 seconds it will be 1 and will start to go down. After 2 more seconds (4 total since this code started running) myValue will be back at 0 and so on. Why 2 seconds? Because the timer measures time in seconds, and the period between the extrema (in this case, 0 and 1) is set to 2f, so 2 seconds.<br/>
-The property of it interchanging between 2 different values at a fixed speed could be extremely useful in certain scenarios.
-#### WaveClamp0x()
-This is another special overload that is its own method but still related to WaveClamp
-```cs
-public static float WaveClamp0x(float num, float period, float maxNum)
-```
-Similar to WaveClamp01(), but it  will interchange between 0 and a specified maxNum instead.<br/> 
-MaxNum parameter cannot be 0 and the method will throw an exception in that case. If maxNum is negative, the method will automatically convert it to a positive value.<br/>
-#### WaveClamp()
-This is the generic method.<br/>
-```cs
-public static float WaveClamp(float num, float period, float minNum, float maxNum)
-```
-Similar to WaveClamp0x(), but you can also specify the minimum value, so it will interchange between minNum and MaxNum. When num is 0, minNum will be returned. For each multiple of period (1\*period, 2\*period, 3\*period, etc), it will return maxNum, minNum, maxNum, etc. respectively<br/>
-minNum and maxNum can't be equal and the method will throw an exception if they are.<br/>
-If minNum is greater than maxNum, it will still behave as expected but instead of starting at the minimum value it wil start at the maximum value.
-
-### ToFloat()
-Changes a byte color (0 to 255) into its corresponding float. Clamped between 0f and 1f:
-```cs
-public static float ToFloat(this byte value)
-{
-    float newValue = value;
-    float returnValue = newValue / 255f;
-    return Mathf.Clamp01(returnValue);
-}
-```
-
-### ToByte()
-Inverse operation of ToFloat, also clamped between 0 and 255:
-```cs
-public static byte ToByte(this float value)
-{
-    float newValue = Mathf.Clamp01(value) * 255f;
-    return (byte)newValue;
-}
-```
-
-### Inv()
-Returns the inverse of a given float.<br/>
-```cs
-public static float Inv(this float num)
-{
-    if (num == 0f) 
-            return 0f;
-    if (num == 1f)
-        return 1f;
-    return 1f / num;
-}
-```
-In other words, if you input 2f in the method it will return 1/2, or 0.5f.
-If num is equal to 1f it will return 1f, same for 0f.
-
-### GetAbs() (Vector2/Vector3)
-Returns the absolute value of a Vector
-```cs
-public static Vector2 GetAbs(this Vector2 originalVector)
-
-public static Vector3 GetAbs(this Vector3 originalVector)
+PlusAPI.IgnoreEntityCollision(GetComponent<Collider2D>(), limbColliders, true);
 ```
 
 ### LimbList
@@ -698,7 +464,7 @@ using StudioPlusAPI;
 using static StudioPlusAPI.LimbList;
 ```
 It is not really used in the API itself for simplicity's sake, but if you're annoyed of typing 'LimbList' in front of a lot of things, this will make it so you don't have to add it because C# will know that it's meant to be there.<br/>
-You can also do this to other structs and static classes.
+You can also do this to other structs.
 
 #### Limb List
 LimbList contains a list of every single Limb transform ever:
@@ -738,59 +504,117 @@ var lowerArmFront = Instance.transform.Find(LimbList.lowerArmFront);
 Notice how when this variable is named the same way the limb in this list is, copy-pasting this line for different limbs becomes a very easy Job.
 
 #### LimbList.FindLimb()
-Speaking of Find, this struct also contains a method that makes finding limbs easier (Contains 3 overloads):
+Speaking of Find, this struct also contains a method that returns the child transform by giving in 2 parameters (Contains 2 overloads):
 ```cs
-public static LimbBehaviour FindLimb(this PersonBehaviour person, string limbType)
+public static Transform FindLimb(Transform transform, string limbType)
 
-public static LimbBehaviour FindLimb(this LimbBehaviour limb, string limbType)
-
-public static LimbBehaviour FindLimb(this CirculationBehaviour circ, string limbType)
-```
-While it is reliant on a reference to PersonBehaviour and returns LimbBehaviour, it's still useful for a lot of cases. Here is an example
-```cs
-PersonBehaviour person = Instance.GetComponent<PersonBehaviour>();
-person.FindLimb(LimbList.lowerArmFront);
-```
-If you only got a limb reference, you can simply use the 2nd overload
-```cs
-LimbBehaviour limb;
-
-public void Start()
-{
-    limb = GetComponent<LimbBehaviour>();
-    var lowerArmFront = limb.FindLimb(LimbList.lowerArmFront);
-}
-```
-If for some strange reason you only got a CirculationBehaviour reference, overload 3 is your friend:
-```cs
-public override void OnUpdate(BloodContainer container)
-{
-    if (container is CirculationBehaviour circ)
-    {
-        var lowerArmFront = circ.FindLimb(LimbList.lowerArmFront);
-    }
-}
+public static GameObject FindLimb(GameObject gameObject, string limbType)
 ```
 
-This is way easier to follow than what we started with and has the bonus of returning LimbBehaviour which will often save on code, because for 75% of the cases you're getting the transform of a limb to get to LimbBehaviour, very rarely will you need an implicit transform reference.
+Here's the example from above but done with this method:
+```cs
+var lowerArmFront = LimbList.FindLimb(Instance.transform, LimbList.lowerArmFront);
+```
+
+Wihle this is longer than what we started with, if you use the recommended line at the beginning of the entry, it would look more like this:
+```cs
+//at the beginning of your file
+//using static StudioPlusAPI.LimbList;
+
+var lowerArmFront = FindLimb(Instance.transform, lowerArmFront);
+```
+
+As you can see, this is now actually shorter than what we started with, but we could in theory make it even shorter:
+```cs
+//at the beginning of your file
+//using static StudioPlusAPI.LimbList;
+
+var lowerArmFront = FindLimb(Instance, lowerArmFront);
+```
+
+Instance is nothing other than a GameObject, so you don't actually have to get its transform in order for it to work.<br/>
+The most significant difference however is that this will return a GameObject instead. Use whatever will make the code shorter, here is a short cheatsheet:
+```cs
+//at the beginning of your file
+//using static StudioPlusAPI.LimbList;
+//In general, use the version below in a block (Note that depending on what you're doing this may not apply)
+
+FindLimb(Instance.transform, lowerArmFront).gameObject.AddComponent<MyComponent>();
+FindLimb(Instance, lowerArmFront).AddComponent<MyComponent>();
+
+FindLimb(Instance.transform, lowerArmFront).GetComponent<MyComponent>();
+FindLimb(Instance, lowerArmFront).GetComponent<MyComponent>();
+
+FindLimb(gameObject, lowerArmFront).GetComponent<MyComponent>();
+FindLimb(transform, lowerArmFront).GetComponent<MyComponent>();
+```
+
+In addition, the method always first goes to the root of the transform before attempting to find the transform/gameObject, so the following 2 expressions function the same:
+```cs
+var lowerArmFront = LimbList.FindLimb(limb.transform.root, LimbList.lowerArmFront).GetComponent<MyComponent>();
+var lowerArmFront = LimbList.FindLimb(limb.transform, LimbList.lowerArmFront).GetComponent<MyComponent>();
+```
+#### LimbList.FindLimbBeh()
+Often will the search for a limb transform also require you to Get its LimbBehaviour Component. Luckily, we got a method that makes this process shorter (Contains 2 overloads):
+```cs
+public static LimbBehaviour FindLimb(Transform transform, string limbType)
+
+public static LimbBehaviour FindLimb(GameObject gameObject, string limbType)
+```
+By adding 3 letters, you can eliminate the need of typing GetComponent for the LimbBehaviour
+
 #### LimbList.FindLimbComp()
-To follow up on the previous statement, for 24% of the cases you're trying to get another custom script from the limb. This method covers that 24% with the same 3 overload options:
+Similar in spirit to FindLimbBeh but generalized to any component on the limb (Contains 2 overloads):
 ```cs
-public static T FindLimbComp<T>(this PersonBehaviour person, string limbType) where T : MonoBehaviour
+public static T FindLimbComp<T>(Transform transform, string limbType) where T : MonoBehaviour
 
-public static T FindLimbComp<T>(this LimbBehaviour limb, string limbType) where T : MonoBehaviour
-
-public static T FindLimbComp<T>(this CirculationBehaviour circ, string limbType) where T : MonoBehaviour
+public static T FindLimbComp<T>(GameObject gameObject, string limbType) where T : MonoBehaviour
 ```
-In fact, FindLimb() is a mere shorter way of writing all of these for LimbBehaviour. For all the cases above you can also write
+By adding 4 letters this time, we can  yet  again spare us the time of writing GetComponent after finding the limb transform
 ```cs
-person.FindLimbComp<LimbBehaviour>(LimbList.lowerArmFront);
-
-var lowerArmFront = limb.FindLimbComp<LimbBehaviour>(LimbList.lowerArmFront);
-
-var lowerArmFront = circ.FindLimbComp<LimbBehaviour>(LimbList.lowerArmFront);
+var lowerArmFront = LimbList.FindLimb(limb.transform, LimbList.lowerArmFront).GetComponent<MyComponent>();
+var lowerArmFront = LimbList.FindLimbComp<MyComponent>(limb.transform, LimbList.lowerArmFront);
 ```
-Or you can replace LimbBehaviour with the script you're looking for.
+Remember that this and the previous methods only work for **getting** a component, not for adding it. We won't be simplifying adding components here.
+
+### WaveClamp()
+A collection of a few special mathemagical functions that can be easily applied. We will be skipping over boring mathematical details and jump right into the mathemagic!<br/>
+Contains a total of 3 overloads:
+####  WaveClamp01()
+```cs
+public static float WaveClamp01(float num, float period)
+```
+This special overload that is actually its own method will interchangibly return a value between 0 and 1 given a periodic amount of time period and a self-incrementing value num.<br/>
+I assume only 0.1% of readers will understand what I mean so a quick example:
+```cs
+float timer = 0f;
+float myValue = 0f;
+
+public void FixedUpdate()
+{
+    myValue = PlusAPI.WaveClamp01(timer, 2f);
+    timer += Time.fixedDeltaTime;
+}
+```
+This method is mostly meant for these kinds of scenarios<br/>
+In this sexample, myValue will first be 0 and will start going upwards, then after 2 seconds it will be 1 and will start to go down. After 2 more seconds (4 total since this code started running) myValue will be back at 0 and so on. Why 2 seconds? Because the timer measures time in seconds, and the period between the extrema (in this case, 0 and 1) is set to 2f, so 2 seconds.<br/>
+The property of it interchanging between 2 different values at a fixed speed could be extremely useful in certain scenarios.
+#### WaveClamp()
+This is the generic method containing the 2 remaining overloads.<br/>
+Overload 1:
+```cs
+public static float WaveClamp(float num, float period, float maxNum)
+```
+Similar to WaveClamp01(), but it  will interchange between 0 and a specified maxNum instead.<br/> 
+MaxNum parameter cannot be 0 and the method will throw an exception in that case. If maxNum is negative, the method will automatically convert it to a positive value.<br/>
+But wait, why does maxNum here come first? It's because the mathematical function of this overload is way easier than the function of the other overload so it comes first.
+
+Overload 2:
+```cs
+public static float WaveClamp(float num, float period, float maxNum, float minNum)
+```
+Similar to the 1st WaveClamp() overload, but you can also specify the minimum value, so it will interchange between minNum and MaxNum. When num is 0, minNum will be returned.<br/>
+minNum and maxNum can't be equal and the method will throw an exception if they are. If minNum is larger than maxNum, the values will be flipped around, so minNum will actually be maxNum in the mathematical function and vice versa.
 
 
 ## ArmorBehaviour (REQUIRES CreationPlus and PlusAPI)
@@ -939,7 +763,7 @@ public class BlasterGloveWearer : BodyArmorWearer
 ```
 
 
-## PowerPlus (REQUIRES PlusAPI)
+## PowerPlus (PlusAPI HIGHLY recommended)
 ### public abstract class PowerPlus : MonoBehaviour
 Allows you to gift humans with power.<br/>
 This class is a beautiful and perfect mesh of being simple for you, the modder, to use, yet also being the most advanced piece of code I've written up to date, so this documentation will be split into 2 parts:
@@ -1076,17 +900,17 @@ if (!PowerActive && !AbilityActive)
 
 if (AbilityActive)
 {
-    if (AbilityEnabled && !Person.FindLimb(LimbList.head).IsCapable)
+    if (AbilityEnabled && !LimbList.FindLimbBeh(transform, LimbList.head).IsCapable)
         ToggleAbilityInt(false);
-    else if (!AbilityEnabled && Person.FindLimb(LimbList.head).IsCapable && PowerEnabled)
+    else if (!AbilityEnabled && LimbList.FindLimbBeh(transform, LimbList.head).IsCapable && PowerEnabled)
         ToggleAbilityInt(true);
 }
 
 if (PowerActive)
 {
-    if (!Person.FindLimb(LimbList.head).IsConsideredAlive && PowerEnabled)
+    if (!LimbList.FindLimbBeh(transform, LimbList.head).IsConsideredAlive && PowerEnabled)
         TogglePowerInt(false);
-    else if (Person.FindLimb(LimbList.head).IsConsideredAlive && !PowerEnabled)
+    else if (LimbList.FindLimbBeh(transform, LimbList.head).IsConsideredAlive && !PowerEnabled)
         TogglePowerInt(true);
 }
 ```
@@ -1112,13 +936,25 @@ The details of how they exactly work and what they do is kinda boring and unnece
 //This class turns *abilities* on or off. Main use for when the one with power is knocked unconcsious
 protected void ToggleAbilityInt(bool toggled)
 {
-    AbilityEnabled = toggled;
-    foreach (Ability ability in Abilities)
+    switch (toggled)
     {
-        ability.enabled = toggled;
+        case true:
+            AbilityEnabled = toggled;
+            foreach (Ability ability in abilities)
+            {
+                ability.enabled = toggled;
+            }
+            Debug.Log("Abilities Enabled!");
+            break;
+        case false:
+            AbilityEnabled = toggled;
+            foreach (Ability ability in abilities)
+            {
+                ability.enabled = toggled;
+            }
+            Debug.Log("Abilities Disabled!");
+            break;
     }
-    string toggledString = toggled ? "Enabled" : "Disabled";
-    Debug.Log($"Abilities {toggledString}!");
     ToggleAbility(toggled);
 }
 ```
@@ -1136,7 +972,7 @@ protected void OnDestroy()
     DeletePower();
 }
 ```
-The only thing that needs to be done when Power is deleted is deleting the ability classes. Everything else is defined by the abstract class.
+The only thing that needs to be done when Power is deleted is deleting the ability classes. Everything else is defined by the subclass
 
 ### public abstract class Ability : MonoBehaviour
 This is a class for all abilities added by PowerPlus class.
@@ -1186,7 +1022,7 @@ public abstract class Ability : MonoBehaviour
 }
 ```
 As you can see, like PowerPlus it has Limb and Person and immediately assigns values for them.<br/>
-It also contains the last of Power & Abilities Toggle Conditions: When the limb is separated from the body or if it's dead, it disables the class.
+It also contains the last of Power & Abilities Toggle Conditions: When the limb is separated from the body or if it's dead, it disables the class. When the limb is revived, it will re-enable the class
 
 The class works the way it works mostly because of that 1 line of code.<br/>
 It also contains the 2 absract methods OnEnable() and OnDisable(), in which you should define what happens when this ability is toggled on and off respectively.
@@ -1243,33 +1079,3 @@ public class FireTouch : Ability
     }
     }
 ```
-
-
-## RegenerationPlus (PlusAPI HIGHLY recommended)
-### ReanimateLimb()
-A method that reanimates a given limb.
-```cs
-public static void ReanimateLimb(this LimbBehaviour myLimb)
-```
-It revives the limb and makes it fully functional again. It does things like healing bones, healing bleeding etc., but doesn't do nothing more than that. It doesn't make the entity conscious and doesn't regenerate anything.
-
-### ReviveLimb()
-Does almost the same thing as RegenerateLimb() but also removes pain, makes the entity conscious again and gives them max adrenaline
-```cs
-public static void ReviveLimb(this LimbBehaviour myLimb)
-```
-
-### ReanimateLimb()
-A method that reanimates a given limb.
-```cs
-public static void ReanimateLimb(this LimbBehaviour myLimb)
-```
-It revives the limb and makes it fully functional again. It does things like healing bones, healing bleeding etc., but doesn't do nothing more than that. It doesn't make the entity conscious and doesn't regenerate anything.
-
-### ReviveLimb()
-Does almost the same thing as RegenerateLimb() but also removes pain, makes the entity conscious again and gives them max adrenaline
-```cs
-public static void ReviveLimb(this LimbBehaviour myLimb)
-```
-
-I'm sorry that this one isn't as sophisticated as everything else but there just isn't much to say about this one.

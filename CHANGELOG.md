@@ -1,7 +1,25 @@
 # STUDIO PLUS API CHANGELOG
 
+## v4.0.1 (29th May 2023)
+### TexturePlus:
+- Renamed SetBodyTexturesArray() to SetBodyTextures()
+- Fixed the name of ResetHealthBarColors(this PersonBehaviour)
+- Removed spare ResetHealthBarColor methods
+- Optimized the previously named methods
+### ArmorBehaviour:
+- Fixed ArmorBehaviour potentially not serialising correctly under specific circumstances
+### PlusAPI:
+- Changed WaveClamp() a little bit and made it less resrictive (See documentation)
+- Added some additional FindLimb() and FindLimbComp() overloads (See documentation)
+### RegenerationPlus:
+- HealWonuds efficiency is now properly clamped between 0 and 1.
+### Documentation changes:
+- Updated the documentation
+- Left the summarized v3.2.1 documentation as LEGACY DOC (v3).md in case anyone refuses to update but still need the old documentation
+- Several files in PlusAPI got summarized into an informal module 'Math Plus'. It's only informal and is not present in the code in any way, shape or form.
+
 ## v4.0.0 (28th May 2023)
-### General
+### General:
 - Added a new module: RegenerationPlus
 - All structs now changed to static classes because...
 - ...StudioPlusAPI now uses extension methods. This has some consequences:

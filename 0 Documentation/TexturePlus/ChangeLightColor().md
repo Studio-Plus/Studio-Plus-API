@@ -1,5 +1,5 @@
 # StudioPlusAPI
-## TexturePlus
+## TexturePlus (REQUIRES PlusAPI)
 ### ChangeLightColor()
 Allows for ~~lazy~~ easy changing of your light sprite color. Contains 2 overloads.
 ```cs
@@ -28,12 +28,3 @@ TexturePlus.ChangeLightColor(
 ```
 ...<br/>
 Okay now this is just straight-up ridiculous, who even came up with this? Oh.
-
-### ChangeAlpha()
-Might as well mention it here. This method changes the alpha of a given color. Contains 2 overloads.
-```cs
-public static Color ChangeAlpha(Color color, float alpha = 1f)
-
-public static Color32 ChangeAlpha(Color32 color, byte alpha = 255)
-```
-By default it changes the alpha to the maximum (Either 1f or 255), but you can set it to whatever you want.

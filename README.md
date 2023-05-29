@@ -1,8 +1,6 @@
 # Studio-Plus-API
-## Current Version: v4.0.0
+## Current Version: v4.0.1
 This is an API for mods created by Studio Plus, open source because stuff like this should be open source.
-
-History repeats itself: v4.0.0 as an update is so massive and needs to be published ASAP so that evil mod can be released ASAP that I am going to update the documentation at a later date, hopefully tomorrow.
 
 There are 2 types of snippets in here:
 - [MOD] is an actual mod that you can throw into your mods folder
@@ -16,6 +14,14 @@ There are 2 types of snippets in here:
 
 Alternatively you can just use the template included in the repository and skip to step 3 for any files you add (files in the template have step 3 completed by default)
 
+This API is modular, meaning that you are meant to be able to remove modules at will. However, sometimes modules will have dependencies on other modules. Here are all the dependencies:
+- TexturePlus: Requires PlusAPI
+- CreationPlus: Requires PlusAPI
+- ArmorBehaviour: Requires PlusAPI and CreationPlus
+- PowerPlus: Requires PlusAPI
+
+As you can see, the dependencies are mostly simply PlusAPI so in general I'd recommend keeping it in at all times and removing other modules instead.
+
 For everything else, check the documentation to get started!
 
-In case of any issues or questions, please join the [Studio Plus Server](https://discord.gg/MxY3n6wfjw).
+In case of any issues or questions, please join the [Studio Plus Server](https://discord.gg/MxY3n6wfjw) and ask them there.

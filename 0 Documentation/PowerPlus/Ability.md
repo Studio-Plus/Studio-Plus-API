@@ -1,5 +1,5 @@
 # StudioPlusAPI
-## PowerPlus (PlusAPI HIGHLY recommended)
+## PowerPlus (REQUIRES PlusAPI)
 ### public abstract class Ability : MonoBehaviour
 This is a class for all abilities added by PowerPlus class.
 

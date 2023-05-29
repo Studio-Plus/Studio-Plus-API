@@ -114,7 +114,7 @@ namespace StudioPlusAPI
             item.ViewSprite = replaceSprite;
         }
 
-        public static void SetBodyTexturesArray(this PersonBehaviour person, Texture2D[] textures, float scale = 1f, int offset = 0)
+        public static void SetBodyTextures(this PersonBehaviour person, Texture2D[] textures, float scale = 1f, int offset = 0)
         {
             if (textures.Length < 3)
                 throw new ArgumentException("SetBodyTexturesArray: Too few body textures in array!");
@@ -129,39 +129,18 @@ namespace StudioPlusAPI
 
         public static void SetHealthBarColors(this PersonBehaviour person, Color color)
         {
-            //Default: new Color(PlusAPI.ToFloat(55), 1f, 0f, 1f);
             foreach (LimbBehaviour limbs in person.Limbs)
             {
-                var myStatus = (GameObject) typeof(LimbBehaviour).GetField("myStatus", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(limbs);
-                myStatus.transform.Find("bar").GetComponent<SpriteRenderer>().color = color;
+                limbs.SetHealthBarColor(color);
             }
         }
 
-        public static void SetHealthBarColors(this PersonBehaviour person, Color32 color)
+        public static void ResetHealthBarColors(this PersonBehaviour person)
         {
-            //Default: new Color32(55, 255, 0, 255);
-            foreach (LimbBehaviour limbs in person.Limbs)
-            {
-                var myStatus = (GameObject) typeof(LimbBehaviour).GetField("myStatus", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(limbs);
-                myStatus.transform.Find("bar").GetComponent<SpriteRenderer>().color = color;
-            }
-        }
-
-        public static void ResetHealthBarColor(this PersonBehaviour person)
-        {
-            foreach (LimbBehaviour limbs in person.Limbs)
-            {
-                limbs.SetHealthBarColor(new Color32(55, 255, 0, 255));
-            }           
+            person.SetHealthBarColors(new Color32(55, 255, 0, 255));          
         }
 
         public static void SetHealthBarColor(this LimbBehaviour limb, Color color)
-        {
-            var myStatus = (GameObject) typeof(LimbBehaviour).GetField("myStatus", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(limb);
-            myStatus.transform.Find("bar").GetComponent<SpriteRenderer>().color = color;
-        }
-
-        public static void SetHealthBarColor(this LimbBehaviour limb, Color32 color)
         {
             var myStatus = (GameObject) typeof(LimbBehaviour).GetField("myStatus", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(limb);
             myStatus.transform.Find("bar").GetComponent<SpriteRenderer>().color = color;

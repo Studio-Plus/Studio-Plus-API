@@ -1,25 +1,25 @@
 # StudioPlusAPI
-## TexturePlus
+## TexturePlus (REQUIRES PlusAPI)
 ### ReplaceItemSprite()
 Part of the 'Advanced texture pack system', allows for replacing sprites under more or less any circumstance. Contains 5 overloads.
 ```cs
-public static void ReplaceItemSprite(string item, Sprite replaceTexture)
+public static void ReplaceItemSprite(this SpawnableAsset item, Sprite replaceTexture)
 
-public static void ReplaceItemSprite(string item, string childObject, Sprite childReplaceTexture)
+public static void ReplaceItemSprite(this SpawnableAsset item, string childObject, Sprite childReplaceTexture)
 
-public static void ReplaceItemSprite(string item, Sprite replaceTexture, string childObject, Sprite childReplaceTexture)
+public static void ReplaceItemSprite(this SpawnableAsset item, Sprite replaceTexture, string childObject, Sprite childReplaceTexture)
 
-public static void ReplaceItemSprite(string item, string[] childObjects, Sprite[] childReplaceSprites)
+public static void ReplaceItemSprite(this SpawnableAsset item, string[] childObjects, Sprite[] childReplaceSprites)
 
-public static void ReplaceItemSprite(string item, Sprite replaceSprite, string[] childObjects, Sprite[] childReplaceSprites)
+public static void ReplaceItemSprite(this SpawnableAsset item, Sprite replaceSprite, string[] childObjects, Sprite[] childReplaceSprites)
 ```
 The most basic version allows for replacing the sprite of regular items lke swords:
 ```cs
-TexturePlus.ReplaceItemSprite("Sword", ModAPI.LoadSprite("Upscaled Sword.png"));
+ModAPI.FindSpawnable("Sword").ReplaceItemSprite(ModAPI.LoadSprite("Upscaled Sword.png"));
 ```
 For items like the axe, if you want to specifically replace the sprite of the axe head, you'll have to do this:
 ```cs
-TexturePlus.ReplaceItemSpriteOfChild("Axe","Axe handle/Axe head", ModAPI.LoadSprite("Futuristic Axe Head.png"));
+ModAPI.FindSpawnable("Axe").ReplaceItemSpriteOfChild("Axe handle/Axe head", ModAPI.LoadSprite("Futuristic Axe Head.png"));
 ```
 You can get the path for childObject from [here (PPG modding wiki)](https://www.studiominus.nl/ppg-modding/gameAssets.html).<br/>
 Keep in mind that this won't work for changing the sprite of your modded axe head (probably). This is a texture pack system specifically made for vanilla items and it's not guaranteed it will work for modded items within your mod (It's another story for texture packs for other mods).<br/>
@@ -43,8 +43,7 @@ ModAPI.Register(
 
 In case there is a sprite on both the child and root of the item that you want to change, use the 3rd overload:
 ```cs
-TexturePlus.ReplaceItemSpriteOfChild(
-    "Example Item", 
+ModAPI.FindSpawnable("Example Item").ReplaceItemSpriteOfChild(
     ModAPI.LoadSprite("Sprite.png"), 
     "Child 1", 
     ModAPI.LoadSprite("Sprite 1.png")
@@ -52,8 +51,7 @@ TexturePlus.ReplaceItemSpriteOfChild(
 ```
 For advanced users, if you want to replace multiple sprites found in children of the root item, use 4th overload:
 ```cs
-TexturePlus.ReplaceItemSprite(
-    "Example Item",
+ModAPI.FindSpawnable("Example Item").ReplaceItemSprite(
     new string[]
     {
         "Child 1",
@@ -68,8 +66,7 @@ TexturePlus.ReplaceItemSprite(
 ```
 And there is of course a version of this for the case a sprite is in the root:
 ```cs
-TexturePlus.ReplaceItemSprite(
-    "Example Item",
+ModAPI.FindSpawnable("Example Item").ReplaceItemSprite(
     ModAPI.LoadSprite("Sprite.png");
     new string[]
     {
@@ -83,4 +80,4 @@ TexturePlus.ReplaceItemSprite(
     },
 );
 ```
-It's very important that you use an **equal** amount of children and sprites in the arrays in overload 4 and 5, otherwise if I programmed it correctly the API is going to immediately terminate the execution of this method.
+It's very important that you use an **equal** amount of children and sprites in the arrays in overload 4 and 5, otherwise the API is going to immediately throw an error
