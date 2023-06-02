@@ -1,4 +1,4 @@
-# StudioPlusAPI DOCUMENTATION (v4.0.1)
+# StudioPlusAPI DOCUMENTATION (v4.0.2)
 ## ChemistryPlus
 ### AddLiquidToItem() 
 This method allows to add a liquid to an already existing item. Contains 2 overloads.<br/>
@@ -735,7 +735,7 @@ Returns the inverse of a given float.<br/>
 public static float Inv(this float num)
 {
     if (num == 0f) 
-            return 0f;
+        return 0f;
     if (num == 1f)
         return 1f;
     return 1f / num;

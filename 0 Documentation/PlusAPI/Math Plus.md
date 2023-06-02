@@ -66,7 +66,7 @@ Returns the inverse of a given float.<br/>
 public static float Inv(this float num)
 {
     if (num == 0f) 
-            return 0f;
+        return 0f;
     if (num == 1f)
         return 1f;
     return 1f / num;
