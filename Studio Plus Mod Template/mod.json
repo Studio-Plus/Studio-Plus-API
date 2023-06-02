@@ -14,7 +14,7 @@
     "StudioPlusAPI/TexturePlus.cs",
     "StudioPlusAPI/CreationPlus.cs",
     "StudioPlusAPI/PlusAPI.cs",
-    "StudioPlusAPI/ArmorBehaviour.cs",
+    "StudioPlusAPI/ArmorPlus.cs",
     "StudioPlusAPI/PowerPlus.cs",
     "StudioPlusAPI/RegenerationPlus.cs"
   ],

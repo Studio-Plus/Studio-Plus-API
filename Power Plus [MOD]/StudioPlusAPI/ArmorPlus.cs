@@ -30,9 +30,11 @@ namespace StudioPlusAPI
         protected List<Collider2D> otherArmorColliders = new List<Collider2D>();
         protected GameObject attachedLimb;
         protected Type armorWearerType;
-        public bool Equipped { get; protected set; } = false; //This one is not accessible and is turned false 5 seconds after detachment
-        public bool IsAttached { get; protected set; } = false; //This one is accessible and is turned false immediately after detachment
-        //Why the names like this? Am I stupid? Yes, but can't be changed cuz serialisation.
+        public bool Equipped { get; protected set; } = false; 
+        public bool IsAttached { get; protected set; } = false;
+
+        protected bool detachTimer = false;
+        protected float timer = 0f;
 
         public void CreateBodyArmor(string newLimbType, float newStabResistance)
         {
@@ -92,10 +94,32 @@ namespace StudioPlusAPI
                 }
                 var armorPiece = collider.gameObject.GetComponent<ArmorBehaviour>();
                 if (Equipped || IsSameType(armorPiece.armorWearerType, armorWearerType) || limbType == armorPiece.limbType)
-                    PlusAPI.IgnoreCollision(GetComponent<Collider2D>(), collider, true);
+                    GetComponent<Collider2D>().IgnoreCollision(collider, true);
                 else
                 {
-                    PlusAPI.IgnoreCollision(GetComponent<Collider2D>(), collider, false);
+                    GetComponent<Collider2D>().IgnoreCollision(collider, false);
+                }
+            }
+
+            if (detachTimer)
+            {
+                if (timer < 5f)
+                    timer += Time.fixedDeltaTime;
+                else
+                {
+                    if (attachedLimb != null)
+                    {
+                        GetComponent<Collider2D>().IgnoreEntityCollision(limbColliders, false);
+                        foreach (GripBehaviour grip in attachedLimb.transform.root.GetComponentsInChildren<GripBehaviour>())
+                        {
+                            grip.RefreshNoCollide(false);
+                            grip.RefreshNoCollide(true);
+                        }
+                        attachedLimb = null;
+                    }
+                    Equipped = false;
+                    timer = 0f;
+                    detachTimer = false;
                 }
             }
         }
@@ -140,7 +164,7 @@ namespace StudioPlusAPI
             GetComponent<SpriteRenderer>().sortingOrder = attachedLimb.GetComponent<SpriteRenderer>().sortingOrder + armorSortingOrder;
             GetComponent<Rigidbody2D>().isKinematic = true;
             limbColliders = attachedLimb.transform.root.GetComponentsInChildren<Collider2D>();
-            PlusAPI.IgnoreEntityCollision(GetComponent<Collider2D>(), limbColliders, true);
+            GetComponent<Collider2D>().IgnoreEntityCollision(limbColliders, true);
 
             ArmorWearer armorWearer = attachedLimb.AddComponent(armorWearerType) as ArmorWearer;
             armorWearer.armorExists = true;
@@ -176,24 +200,7 @@ namespace StudioPlusAPI
             {
                 grip.CollidersToIgnore.Remove(GetComponent<Collider2D>());
             }
-            StartCoroutine(ArmorCollision());
-        }
-
-        protected IEnumerator ArmorCollision()
-        {
-            yield return new WaitForSeconds(5f);
-            if (attachedLimb != null)
-            {
-                PlusAPI.IgnoreEntityCollision(GetComponent<Collider2D>(), limbColliders, false);
-                foreach (GripBehaviour grip in attachedLimb.transform.root.GetComponentsInChildren<GripBehaviour>())
-                {
-                    grip.RefreshNoCollide(false);
-                    grip.RefreshNoCollide(true);
-                }
-                attachedLimb = null;
-            }
-            Equipped = false;
-
+            detachTimer = true;
         }
 
         protected void OnDestroy()
@@ -216,7 +223,7 @@ namespace StudioPlusAPI
                 armorExists = false;
             else
             {
-                var newArmorObject = CreationPlus.SpawnItem(ModAPI.FindSpawnable(armorName), transform);
+                var newArmorObject = ModAPI.FindSpawnable(armorName).SpawnItem(transform);
                 ArmorObject = newArmorObject.GetComponent<ArmorBehaviour>();
                 Destroy(this);
             }

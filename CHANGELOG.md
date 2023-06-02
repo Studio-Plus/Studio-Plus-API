@@ -1,5 +1,22 @@
 # STUDIO PLUS API CHANGELOG
 
+## v4.0.2 (2nd June 2023)
+### General:
+- All local variables are now explicit (no more var)
+### ChemistryPlus:
+- Added new LiquidReaction() overloads (See documentation)
+- Changed some LiquidReacion() parameter names to be less confusing 
+### CreationPlus:
+- **Now** fully fixed SpawnItem()
+- Made all SpawnItem methods extension methods.
+- Made CreateDebris() simpler
+### PlusAPI:
+- Added Sum() (See documentation)
+### ArmorPlus:
+- Module got officially renamed to ArmorPlus
+  - This does not change the naming of the classes to prevent too many needless incompatibility issues
+- ArmorBehaviour [MOD] was improved, now armor made out of multiple armor pieces can be deleted with z
+
 ## v4.0.1 (29th May 2023)
 ### TexturePlus:
 - Renamed SetBodyTexturesArray() to SetBodyTextures()

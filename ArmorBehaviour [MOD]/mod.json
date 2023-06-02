@@ -1,8 +1,8 @@
 {
-  "Name": "Armor Behaviour+",
+  "Name": "Armor+",
   "Author": "Studio Plus",
-  "Description": "A revamped and improved version of ArmorBehaviour. \n(Originally created probably by 'weirdo')",
-  "ModVersion": "v1.1.1",
+  "Description": "A revamped and improved version of ArmorBehaviour. \n(Originally created by 'weirdo')",
+  "ModVersion": "v1.0.0",
   "GameVersion": "1.26+",
   "ThumbnailPath": "Textures/Mod/Thumbnail.png",
   "EntryPoint": "Mod.Mod",
@@ -23,8 +23,9 @@
     "StudioPlusAPI/TexturePlus.cs",
     "StudioPlusAPI/CreationPlus.cs",
     "StudioPlusAPI/PlusAPI.cs",
-    "StudioPlusAPI/ArmorBehaviour.cs",
-    "StudioPlusAPI/PowerPlus.cs"
+    "StudioPlusAPI/ArmorPlus.cs",
+    "StudioPlusAPI/PowerPlus.cs",
+    "StudioPlusAPI/RegenerationPlus.cs"
   ],
   "Active": false,
   "UGCIdentity": null,

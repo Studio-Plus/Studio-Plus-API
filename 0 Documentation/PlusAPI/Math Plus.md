@@ -40,7 +40,7 @@ minNum and maxNum can't be equal and the method will throw an exception if they 
 If minNum is greater than maxNum, it will still behave as expected but instead of starting at the minimum value it wil start at the maximum value.
 
 ### ToFloat()
-Changes a byte color (0 to 255) into its corresponding float. Clamped between 0f and 1f:
+Changes a byte (0 to 255) into its corresponding float. Clamped between 0f and 1f:
 ```cs
 public static float ToFloat(this byte value)
 {
@@ -81,4 +81,24 @@ Returns the absolute value of a Vector
 public static Vector2 GetAbs(this Vector2 originalVector)
 
 public static Vector3 GetAbs(this Vector3 originalVector)
+```
+
+### Sum() (float/int)
+Returns the sum of given floats or integers
+```cs
+public static float Sum(params float[] values)
+
+public static int Sum(params int[] values)
+```
+You can input the values as either an array or individual values
+```cs
+float example1 = PlusAPI.Sum(1.9f, 2.1f, 4.3f, 6f);
+float[] exampleArray = new float[]
+{
+    1.9f, 
+    2.1f, 
+    4.3f, 
+    6f
+};
+float example2 = PlusAPI.Sum(exampleArray);
 ```

@@ -8,9 +8,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine.Events;
 using StudioPlusAPI;
-using System.Threading;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 
 //StudioPlusAPI is an API for the game people playground, created by Dawid23 Gamer and Studio Plus. It allows for modders to program mods for the game more easily, or at least that's the idea. 
 //This API is released under the zlib license, by using it for your mod and/or downloading it you confirm that you read and agreed to the terms of said license.
@@ -49,12 +46,25 @@ namespace StudioPlusAPI
             IgnoreCollisionStackController.IgnoreCollisionSubstituteMethod(main, other, ignColl);
         }
 
+
+        public static Color ChangeAlpha(this Color color, float alpha)
+        {
+            float trueAlpha = Mathf.Clamp01(alpha);
+            return new Color(color.r, color.g, color.b, trueAlpha);
+        }
+
+        public static Color32 ChangeAlpha(this Color32 color, byte alpha)
+        {
+            return new Color32(color.r, color.g, color.b, alpha);
+        }
+
+
         public static float WaveClamp01(float num, float period)
         {
             return -0.5f * Mathf.Cos(num * Mathf.PI / period) + 0.5f;
         }
 
-        public static float WaveClamp(float num, float period, float maxNum)
+        public static float WaveClamp0x(float num, float period, float maxNum)
         {
             if (maxNum == 0)
                 throw new ArgumentException("WaveClamp: maxNum cannot equal 0");
@@ -62,15 +72,12 @@ namespace StudioPlusAPI
             return trueMaxNum * (-0.5f * Mathf.Cos(num * Mathf.PI / period) + 0.5f);
         }
 
-        public static float WaveClamp(float num, float period, float maxNum, float minNum)
+        public static float WaveClamp(float num, float period, float minNum, float maxNum)
         {
             if (maxNum == minNum)
                 throw new ArgumentException("WaveClamp: maxNum and minNum cannot be equal");
-            float trueMaxNum = maxNum > minNum ? maxNum : minNum;
-            float trueMinNum = maxNum > minNum ? minNum : maxNum;
-            return (trueMaxNum - trueMinNum) * (-0.5f * Mathf.Cos(num * Mathf.PI / period) + 0.5f) + trueMinNum;
+            return (maxNum - minNum) * (-0.5f * Mathf.Cos(num * Mathf.PI / period) + 0.5f) + minNum;
         }
-
 
         public static float ToFloat(this byte value)
         {
@@ -85,18 +92,6 @@ namespace StudioPlusAPI
             return (byte)newValue;
         }
 
-
-        public static Color ChangeAlpha(this Color color, float alpha)
-        {
-            return new Color(color.r, color.g, color.b, alpha);
-        }
-
-        public static Color32 ChangeAlpha(this Color32 color, byte alpha)
-        {
-            return new Color32(color.r, color.g, color.b, alpha);
-        }
-
-
         public static float Inv(this float num)
         {
             if (num == 0f) 
@@ -106,7 +101,6 @@ namespace StudioPlusAPI
             return 1f / num;
         }
 
-
         public static Vector2 GetAbs(this Vector2 originalVector)
         {
             return new Vector2(Mathf.Abs(originalVector.x), Mathf.Abs(originalVector.y));
@@ -115,6 +109,26 @@ namespace StudioPlusAPI
         public static Vector3 GetAbs(this Vector3 originalVector)
         {
             return new Vector3(Mathf.Abs(originalVector.x), Mathf.Abs(originalVector.y), Mathf.Abs(originalVector.z));
+        }
+
+        public static float Sum(params float[] values)
+        {
+            float sum = 0f;
+            foreach (float value in values)
+            {
+                sum += value;
+            }
+            return sum;
+        }
+
+        public static int Sum(params int[] values)
+        {
+            int sum = 0;
+            foreach (int value in values)
+            {
+                sum += value;
+            }
+            return sum;
         }
 
 
@@ -159,9 +173,29 @@ namespace StudioPlusAPI
             return person.FindLimbComp<LimbBehaviour>(limbType);
         }
 
+        public static LimbBehaviour FindLimb(this LimbBehaviour limb, string limbType)
+        {
+            return limb.FindLimbComp<LimbBehaviour>(limbType);
+        }
+
+        public static LimbBehaviour FindLimb(this CirculationBehaviour circ, string limbType)
+        {
+            return circ.FindLimbComp<LimbBehaviour>(limbType);
+        }
+
         public static T FindLimbComp<T>(this PersonBehaviour person, string limbType) where T : MonoBehaviour
         {
-            return person.transform.root.Find(limbType).GetComponent<T>();
+            return person.transform.Find(limbType).GetComponent<T>();
+        }
+
+        public static T FindLimbComp<T>(this LimbBehaviour limb, string limbType) where T : MonoBehaviour
+        {
+            return limb.Person.transform.Find(limbType).GetComponent<T>();
+        }
+
+        public static T FindLimbComp<T>(this CirculationBehaviour circ, string limbType) where T : MonoBehaviour
+        {
+            return circ.Limb.Person.transform.Find(limbType).GetComponent<T>();
         }
     }
 }

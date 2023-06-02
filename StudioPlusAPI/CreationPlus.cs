@@ -18,13 +18,13 @@ namespace StudioPlusAPI
 {
     public static class CreationPlus
     {
-        public static GameObject SpawnItem(SpawnableAsset item, Transform parent, Vector3 position = default, bool spawnSpawnParticles = false)
+        public static GameObject SpawnItem(this SpawnableAsset item, Transform transform, Vector3 position = default, bool spawnSpawnParticles = false)
         {
-            Quaternion vectorRotation = parent.lossyScale.x < 0f ? Quaternion.Euler(0f, 0f, 180f) * parent.rotation : parent.rotation;
-            Vector3 newPosition = parent.position + vectorRotation * Vector2.Scale(position, parent.localScale.GetAbs());
+            //float xFlip = parent.lossyScale.x < 0f ? -1f : 1f;
+            Vector3 newPosition = transform.position + transform.rotation * Vector3.Scale(position, transform.lossyScale);
 
-            GameObject spawnedItem = UnityEngine.Object.Instantiate(item.Prefab, newPosition, parent.rotation);
-            spawnedItem.transform.localScale = parent.lossyScale;
+            GameObject spawnedItem = UnityEngine.Object.Instantiate(item.Prefab, newPosition, transform.rotation);
+            spawnedItem.transform.localScale = transform.lossyScale;
             PhysicalBehaviour phys = spawnedItem.GetComponent<PhysicalBehaviour>();
             phys.SpawnSpawnParticles = spawnSpawnParticles;
             spawnedItem.AddComponent<AudioSourceTimeScaleBehaviour>();
@@ -35,7 +35,7 @@ namespace StudioPlusAPI
             return spawnedItem;
         }
 
-        public static GameObject SpawnItemAsChild(SpawnableAsset item, Transform parent, Vector3 position = default, bool spawnSpawnParticles = false)
+        public static GameObject SpawnItemAsChild(this SpawnableAsset item, Transform parent, Vector3 position = default, bool spawnSpawnParticles = false)
         {
             GameObject spawnedItem = UnityEngine.Object.Instantiate(item.Prefab, parent.position, parent.rotation);
             spawnedItem.transform.SetParent(parent);
@@ -52,7 +52,7 @@ namespace StudioPlusAPI
         }
 
         [Obsolete]
-        public static GameObject SpawnItemStatic(SpawnableAsset item, Vector2 position = default, bool spawnSpawnParticles = false)
+        public static GameObject SpawnItemStatic(this SpawnableAsset item, Vector2 position = default, bool spawnSpawnParticles = false)
         {
             GameObject spawnedItem = UnityEngine.Object.Instantiate(item.Prefab, position, Quaternion.identity);
             PhysicalBehaviour phys = spawnedItem.GetComponent<PhysicalBehaviour>();
@@ -102,12 +102,11 @@ namespace StudioPlusAPI
 
         public static GameObject CreateDebris(string name, Transform parent, Sprite sprite, Vector2 position = default)
         {
-            Quaternion vectorRotation = parent.lossyScale.x < 0f ? Quaternion.Euler(0f, 0f, 180f) * parent.rotation : parent.rotation;
             GameObject myGameObject = ModAPI.CreatePhysicalObject(name, sprite);
-            myGameObject.transform.position = parent.position + vectorRotation * Vector2.Scale(position, parent.localScale.GetAbs());
+            myGameObject.transform.position = parent.position + parent.rotation * Vector2.Scale(position, parent.localScale);
             myGameObject.transform.rotation = parent.rotation;
             myGameObject.transform.localScale = parent.lossyScale;
-            parent.gameObject.GetOrAddComponent<DestroyShardsController>().childrenObjects.Add(myGameObject);
+            parent.gameObject.GetOrAddComponent<InformalChildren>().childrenObjects.Add(myGameObject);
             myGameObject.AddComponent<DebrisComponent>();
             return myGameObject;
         }
@@ -130,7 +129,7 @@ namespace StudioPlusAPI
             return particles;
         }
 
-        public class DestroyShardsController : MonoBehaviour
+        public class InformalChildren : MonoBehaviour
         {
             public List<GameObject> childrenObjects = new List<GameObject>();
             protected int count;

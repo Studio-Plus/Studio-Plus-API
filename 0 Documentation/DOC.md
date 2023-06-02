@@ -23,13 +23,17 @@ ModAPI.FindSpawnable("Rotor").AddLiquidToItem(Oil.ID, 1.4f, 2.8f);
 This is nearly useless, I know.
 
 ### LiquidReaction() 
-This method allows you to make liquids combine into 1. Contains 3 overloads.<br/>
+This collection of methods allows you to create custom liquid mixes. Contains 5 overloads.<br/>
 ```cs
-public static void LiquidReaction(string liquid1, string liquid2, string target, float ratePerSecond = 0.05f)
+public static void LiquidReaction(string input1, string input2, string target, float ratePerSecond = 0.05f)
 
-public static void LiquidReaction(string liquid1, string liquid2, string liquid3, string target, float ratePerSecond = 0.05f)
+public static void LiquidReaction(string input1, string input2, string input3, string target, float ratePerSecond = 0.05f)
 
-public static void LiquidReaction(Liquid[] ingredientLiquids, Liquid target, float ratePerSecond = 0.05f)
+public static void LiquidReaction(Liquid[] inputs, Liquid target, float ratePerSecond = 0.05f)
+
+public static void LiquidReaction(Liquid[] inputs, Liquid[] targets, float ratePerSecond = 0.05f)
+
+public static void LiquidReaction(Liquid[] inputs, Liquid[] targets, int[] ratios, float ratePerSecond = 0.05f)
 ```
 The most basic version is for mixing 2 liquids into one:
 ```cs
@@ -55,7 +59,69 @@ ChemistryPlus.LiquidReaction(
 )
 //If you're wondering, no, I'm not a Powerpuff Girls fan, it's just a fun example.
 ```
-It is not possible to mix e.g. 4 liquids into 2 with 1 API method, although it shouldn't be hard to implement something like this.
+For even more advanced users the 4th overload allows you to mix multiple input liquids into multiple output liquids
+```cs
+ChemistryPlus.LiquidReaction(
+    new Liquid[]
+    {
+        Liquid.GetLiquid(Sugar.ID),
+        Liquid.GetLiquid(Spice.ID),
+        Liquid.GetLiquid(EverythingNice.ID),
+        Liquid.GetLiquid(Chemistry.Tritium.ID)
+    }, 
+    new Liquid[]
+    {
+        Liquid.GetLiquid(Blossom.ID),
+        Liquid.GetLiquid(Bubbles.ID),
+        Liquid.GetLiquid(Buttercup.ID)
+    },
+    0.06f
+)
+```
+These liquids will be created in equal ratios. However, if you want unique ratios, use the 5th overload:
+```cs
+ChemistryPlus.LiquidReaction(
+    new Liquid[]
+    {
+        Liquid.GetLiquid(Sugar.ID),
+        Liquid.GetLiquid(Spice.ID),
+        Liquid.GetLiquid(EverythingNice.ID),
+        Liquid.GetLiquid(Chemistry.Tritium.ID)
+    }, 
+    new Liquid[]
+    {
+        Liquid.GetLiquid(Blossom.ID),
+        Liquid.GetLiquid(Bubbles.ID),
+        Liquid.GetLiquid(Buttercup.ID)
+    },
+    new int[]
+    {
+        2,
+        3,
+        4
+    },
+    0.09f
+)
+```
+I'm going to explain how these ratios work:<br/>
+First of all, the number of ratios and outputs must match exactly, otherwise you will get an error.<br/>
+When the mixing process takes place, a total of 9 (sum of all numbers in the ratios array) parts of liquid will be made. 2 parts will be Blossom, 3 parts will be Bubbles and 4 parts will be ButterCup.
+
+You might have noticed that for the last 2 overloads I specifically set a ratePerSecond to 0.06f and 0.09f respectively. This is very important so read carefully:<br/>
+Because PPG code is garbage, if a given liquid in a container is below 0.02 units, it gets removed. The way these 2 overloads work is that they divide the inputed ratePerSecond, which could result in the liquid reaction not working properly.
+
+To save you the headache of having to adjust these values yourself, the methods will automatically calculate the lowest ratePerSecond that will work and adjust your inputted ratePerSecond accordingly. If you're curious how those values are calculated, the general formula is
+```cs
+float minRate = 0.02f * divisor / Mathf.Min(ratios);
+```
+Divisor here is the sum of all ratios.<br/>
+For the 4th overload, the divisor is simply the number of output liquids and the minimum value is 1 (Because what the 4th overload does is basically a 1 : 1 : ... ratio) so the formula is:
+```cs
+float minRate = 0.02f * targets.Length;
+```
+For the 4th overload example, the minimum value is 0.02f * 3 = 0.06f, and for the 5th overload example the minimum value is 0.02f * 9 / 2 = 0.09f.
+
+The larger the ratePerSecond is, the more inaccurate does the mix become so approach the last 2 overloads with caution.
 
 ### AddBottleOpening()
 This method allows you to add a bottle opening to any container.
@@ -442,19 +508,19 @@ I don't think an example is in order.
 Finally going into detail with this one.<br/>
 Allows you to spawn another item.
 ```cs
-public static GameObject SpawnItem(SpawnableAsset item, Transform transform, Vector3 position = default, bool spawnSpawnParticles = false)
+public static GameObject SpawnItem(this SpawnableAsset item, Transform transform, Vector3 position = default, bool spawnSpawnParticles = false)
 ```
 The way it works is that it spawns the item in, rotated to align with the specified transform and at the position of said item moved accordingly as defined in the position parameter.<br/>
 Here are some examples:<br/>
 Example 1:
 ```cs
-var newObject = CreationPlus.SpawnItem(ModAPI.FindSpawnable("Crossbow Bolt"), transform);
+GameObject newObject = ModAPI.FindSpawnable("Crossbow Bolt").SpawnItem(transform);
 ```
 This is the most straight forward: Spawns in a Crossbow bolt at the center of your item rotated accordingly.
 
 Example 2:
 ```cs
-var newObject = CreationPlus.SpawnItem(ModAPI.FindSpawnable("Crossbow Bolt"), transform, new Vector2(5f, 0f) * ModAPI.PixelSize);
+GameObject newObject = ModAPI.FindSpawnable("Crossbow Bolt").SpawnItem(transform, new Vector2(5f, 0f) * ModAPI.PixelSize);
 ```
 Same thing happens like in example 1 but the crossbow bolt is moved over by 5 pixels to the right relative to how the item through which it's spawned is rotated and flipped (In other words if you spawn it with q it'll be 5 pixels to the left instead).
 
@@ -462,20 +528,20 @@ Same thing happens like in example 1 but the crossbow bolt is moved over by 5 pi
 Finally going into detail with this one too.<br/>
 Allows you to spawn another item as a child of another item.
 ```cs
-public static GameObject SpawnItemAsChild(SpawnableAsset item, Transform parent, Vector3 position = default, bool spawnSpawnParticles = false)
+public static GameObject SpawnItemAsChild(this SpawnableAsset item, Transform parent, Vector3 position = default, bool spawnSpawnParticles = false)
 ```
 Basically the same as the regular method but more straight forward because it actually makes the spawned item to the child of the parent transform.
 ```cs
-var newObject = CreationPlus.SpawnItemAsChild(ModAPI.FindSpawnable("Crossbow Bolt"), transform);
+GameObject newObject = ModAPI.FindSpawnable("Crossbow Bolt").SpawnItemAsChild(transform);
 ```
 
 ### SpawnItemStatic()
 The so far only big obsolete method:
 ```cs
 [Obsolete]
-public static GameObject SpawnItemStatic(SpawnableAsset item, Vector2 position = default, bool spawnSpawnParticles = false)
+public static GameObject SpawnItemStatic(this SpawnableAsset item, Vector2 position = default, bool spawnSpawnParticles = false)
 ```
-It's the old SpawnItem method that spawns the item at a fixed point perfectly rotated towards the plane. I'm not sure if it's useful or not cuz I wrote this last-minute change at 11 PM so I left it hidden in the code.
+It's the old SpawnItem method that spawns the item at a fixed point perfectly rotated towards the plane. I'm not sure if it's useful or not cuz I wrote this last-minute change at 11 PM so I left it hidden in the 
 
 ### CreateFixedJoint()
 Creates a fixed joint between two objects. Contains 2 overloads.
@@ -643,7 +709,7 @@ minNum and maxNum can't be equal and the method will throw an exception if they 
 If minNum is greater than maxNum, it will still behave as expected but instead of starting at the minimum value it wil start at the maximum value.
 
 ### ToFloat()
-Changes a byte color (0 to 255) into its corresponding float. Clamped between 0f and 1f:
+Changes a byte (0 to 255) into its corresponding float. Clamped between 0f and 1f:
 ```cs
 public static float ToFloat(this byte value)
 {
@@ -684,6 +750,26 @@ Returns the absolute value of a Vector
 public static Vector2 GetAbs(this Vector2 originalVector)
 
 public static Vector3 GetAbs(this Vector3 originalVector)
+```
+
+### Sum() (float/int)
+Returns the sum of given floats or integers
+```cs
+public static float Sum(params float[] values)
+
+public static int Sum(params int[] values)
+```
+You can input the values as either an array or individual values
+```cs
+float example1 = PlusAPI.Sum(1.9f, 2.1f, 4.3f, 6f);
+float[] exampleArray = new float[]
+{
+    1.9f, 
+    2.1f, 
+    4.3f, 
+    6f
+};
+float example2 = PlusAPI.Sum(exampleArray);
 ```
 
 ### LimbList

@@ -43,34 +43,69 @@ namespace StudioPlusAPI
             };
         }
 
-        public static void LiquidReaction(string liquid1, string liquid2, string target, float ratePerSecond = 0.05f)
+        public static void LiquidReaction(string input1, string input2, string target, float ratePerSecond = 0.05f)
         {
-            var mixer = new LiquidMixInstructions(
-                Liquid.GetLiquid(liquid1),
-                Liquid.GetLiquid(liquid2),
+            LiquidMixInstructions mixer = new LiquidMixInstructions(
+                Liquid.GetLiquid(input1),
+                Liquid.GetLiquid(input2),
                 Liquid.GetLiquid(target),
                 ratePerSecond);
 
             LiquidMixingController.MixInstructions.Add(mixer);
         }
 
-        public static void LiquidReaction(string liquid1, string liquid2, string liquid3, string target, float ratePerSecond = 0.05f)
+        public static void LiquidReaction(string input1, string input2, string input3, string target, float ratePerSecond = 0.05f)
         {
-            var mixer = new LiquidMixInstructions(
-                Liquid.GetLiquid(liquid1),
-                Liquid.GetLiquid(liquid2),
-                Liquid.GetLiquid(liquid3),
+            LiquidMixInstructions mixer = new LiquidMixInstructions(
+                Liquid.GetLiquid(input1),
+                Liquid.GetLiquid(input2),
+                Liquid.GetLiquid(input3),
                 Liquid.GetLiquid(target),
                 ratePerSecond);
 
             LiquidMixingController.MixInstructions.Add(mixer);
         }
 
-        public static void LiquidReaction(Liquid[] ingredientLiquids, Liquid target, float ratePerSecond = 0.05f)
+        public static void LiquidReaction(Liquid[] inputs, Liquid target, float ratePerSecond = 0.05f)
         {
-            var mixer = new LiquidMixInstructions(ingredientLiquids, target, ratePerSecond);
+            LiquidMixInstructions mixer = new LiquidMixInstructions(inputs, target, ratePerSecond);
             LiquidMixingController.MixInstructions.Add(mixer);
         }
+
+        public static void LiquidReaction(Liquid[] inputs, Liquid[] targets, float ratePerSecond = 0.05f)
+        {
+            float minRate = 0.02f * targets.Length;
+            ratePerSecond = minRate < ratePerSecond ? ratePerSecond : minRate;
+            foreach (Liquid target in targets)
+            {
+                LiquidMixInstructions mixer = new LiquidMixInstructions(inputs, target, ratePerSecond / targets.Length);
+                LiquidMixingController.MixInstructions.Add(mixer);
+            }
+        }
+
+        public static void LiquidReaction(Liquid[] inputs, Liquid[] targets, int[] ratios, float ratePerSecond = 0.05f)
+        {
+            if (targets.Length != ratios.Length)
+            {
+                string errorType = targets.Length < ratios.Length ? "targets" : "ratios";
+                throw new ArgumentException($"LiquidReaction: Not enough {errorType} elements!");
+            }
+            foreach (int num in ratios)
+            {
+                if (num < 1)
+                    throw new ArgumentException("LiquidReaction: No ratio can be 0 or less!");
+            }
+            int divisor = PlusAPI.Sum(ratios);
+            float minRate = 0.02f * divisor / Mathf.Min(ratios);
+            ratePerSecond = minRate < ratePerSecond ? ratePerSecond : minRate;
+            for (int i = 0; i < targets.Length; i++)
+            {
+                float multiplier = (float)ratios[i] / divisor;
+                LiquidMixInstructions mixer = new LiquidMixInstructions(inputs, targets[i], ratePerSecond * multiplier);
+                LiquidMixingController.MixInstructions.Add(mixer);
+            }
+        }
+
 
         public static PointLiquidTransferBehaviour AddBottleOpening(this BloodContainer container, Vector2 position, Space outerSpace = Space.Self)
         {

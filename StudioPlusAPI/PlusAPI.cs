@@ -79,7 +79,6 @@ namespace StudioPlusAPI
             return (maxNum - minNum) * (-0.5f * Mathf.Cos(num * Mathf.PI / period) + 0.5f) + minNum;
         }
 
-
         public static float ToFloat(this byte value)
         {
             float newValue = value;
@@ -93,7 +92,6 @@ namespace StudioPlusAPI
             return (byte)newValue;
         }
 
-
         public static float Inv(this float num)
         {
             if (num == 0f) 
@@ -103,7 +101,6 @@ namespace StudioPlusAPI
             return 1f / num;
         }
 
-
         public static Vector2 GetAbs(this Vector2 originalVector)
         {
             return new Vector2(Mathf.Abs(originalVector.x), Mathf.Abs(originalVector.y));
@@ -112,6 +109,26 @@ namespace StudioPlusAPI
         public static Vector3 GetAbs(this Vector3 originalVector)
         {
             return new Vector3(Mathf.Abs(originalVector.x), Mathf.Abs(originalVector.y), Mathf.Abs(originalVector.z));
+        }
+
+        public static float Sum(params float[] values)
+        {
+            float sum = 0f;
+            foreach (float value in values)
+            {
+                sum += value;
+            }
+            return sum;
+        }
+
+        public static int Sum(params int[] values)
+        {
+            int sum = 0;
+            foreach (int value in values)
+            {
+                sum += value;
+            }
+            return sum;
         }
 
 

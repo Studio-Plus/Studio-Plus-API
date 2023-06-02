@@ -122,8 +122,8 @@ namespace StudioPlusAPI
                 throw new ArgumentOutOfRangeException("SetBodyTexturesArray: Offset cannot be less than 0!");
             if (textures.Length % 3 != 0)
                 throw new ArgumentOutOfRangeException("SetBodyTexturesArray: Amount of textures in array must be a multiple of 3! (Offset empty slots with null elements?)");
-            int trueOffset = offset * 3;
-            person.SetBodyTextures(textures[0 + trueOffset], textures[1 + trueOffset], textures[2 + trueOffset], scale);
+            offset = offset * 3;
+            person.SetBodyTextures(textures[0 + offset], textures[1 + offset], textures[2 + offset], scale);
         }
 
 
@@ -142,7 +142,7 @@ namespace StudioPlusAPI
 
         public static void SetHealthBarColor(this LimbBehaviour limb, Color color)
         {
-            var myStatus = (GameObject) typeof(LimbBehaviour).GetField("myStatus", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(limb);
+            GameObject myStatus = (GameObject)typeof(LimbBehaviour).GetField("myStatus", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(limb);
             myStatus.transform.Find("bar").GetComponent<SpriteRenderer>().color = color;
         }
 

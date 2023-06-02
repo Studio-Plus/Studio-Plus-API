@@ -48,6 +48,7 @@ namespace Mod
                 }
             );
 
+
             ModAPI.Register(
                 new Modification()
                 {
@@ -111,11 +112,14 @@ namespace Mod
                         string middleBody = "Body Armor (Middle Body)" + tag;
                         string lowerBody = "Body Armor (Lower Body)" + tag;
 
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(upperBody), Instance.transform, new Vector3(0f, 9f) * ModAPI.PixelSize, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(middleBody), Instance.transform, Vector3.zero, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(lowerBody), Instance.transform, new Vector3(0f, -9f) * ModAPI.PixelSize, true);
-
-                        UnityEngine.Object.Destroy(Instance);
+                        GameObject[] armorPieces = new GameObject[]
+                        {
+                            ModAPI.FindSpawnable(upperBody).SpawnItem(Instance.transform, new Vector3(0f, 9f) * ModAPI.PixelSize, true),
+                            ModAPI.FindSpawnable(middleBody).SpawnItem(Instance.transform, Vector3.zero, true),
+                            ModAPI.FindSpawnable(lowerBody).SpawnItem(Instance.transform, new Vector3(0f, -9f) * ModAPI.PixelSize, true)
+                        };
+                        Instance.GetOrAddComponent<CreationPlus.InformalChildren>().childrenObjects.AddRange(armorPieces);
+                        
                     }
                 }
             );
@@ -500,29 +504,31 @@ namespace Mod
 
                         string backpack = "Cosmonaut Suit (Backpack)" + tag;
 
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(head), Instance.transform, Vector3.zero, true);
+                        GameObject[] armorPieces = new GameObject[]
+                        {
+                            ModAPI.FindSpawnable(head).SpawnItem(Instance.transform, Vector3.zero, true),
 
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(upperBody), Instance.transform, Vector3.zero, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(middleBody), Instance.transform, Vector3.zero, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(lowerBody), Instance.transform, Vector3.zero, true);
+                            ModAPI.FindSpawnable(upperBody).SpawnItem(Instance.transform, Vector3.zero, true),
+                            ModAPI.FindSpawnable(middleBody).SpawnItem(Instance.transform, Vector3.zero, true),
+                            ModAPI.FindSpawnable(lowerBody).SpawnItem(Instance.transform, Vector3.zero, true),
 
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(upperArmFront), Instance.transform, Vector3.zero, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(lowerArmFront), Instance.transform, Vector3.zero, true);
+                            ModAPI.FindSpawnable(upperArmFront).SpawnItem(Instance.transform, Vector3.zero, true),
+                            ModAPI.FindSpawnable(lowerArmFront).SpawnItem(Instance.transform, Vector3.zero, true),
 
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(upperArm), Instance.transform, Vector3.zero, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(lowerArm), Instance.transform, Vector3.zero, true);
+                            ModAPI.FindSpawnable(upperArm).SpawnItem(Instance.transform, Vector3.zero, true),
+                            ModAPI.FindSpawnable(lowerArm).SpawnItem(Instance.transform, Vector3.zero, true),
 
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(frontLegFront), Instance.transform, Vector3.zero, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(lowerLegFront), Instance.transform, Vector3.zero, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(footFront), Instance.transform, Vector3.zero, true);
-                            
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(frontLeg), Instance.transform, Vector3.zero, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(lowerLeg), Instance.transform, Vector3.zero, true);
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(foot), Instance.transform, Vector3.zero, true);
+                            ModAPI.FindSpawnable(frontLegFront).SpawnItem(Instance.transform, Vector3.zero, true),
+                            ModAPI.FindSpawnable(lowerLegFront).SpawnItem(Instance.transform, Vector3.zero, true),
+                            ModAPI.FindSpawnable(footFront).SpawnItem(Instance.transform, Vector3.zero, true),
 
-                        CreationPlus.SpawnItem(ModAPI.FindSpawnable(backpack), Instance.transform, Vector3.zero, true);
+                            ModAPI.FindSpawnable(frontLeg).SpawnItem(Instance.transform, Vector3.zero, true),
+                            ModAPI.FindSpawnable(lowerLeg).SpawnItem(Instance.transform, Vector3.zero, true),
+                            ModAPI.FindSpawnable(foot).SpawnItem(Instance.transform, Vector3.zero, true),
 
-                        UnityEngine.Object.Destroy(Instance);
+                            ModAPI.FindSpawnable(backpack).SpawnItem(Instance.transform, Vector3.zero, true),
+                        };
+                        Instance.GetOrAddComponent<CreationPlus.InformalChildren>().childrenObjects.AddRange(armorPieces);
                     }
                 }
             );

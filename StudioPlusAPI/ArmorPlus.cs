@@ -223,7 +223,7 @@ namespace StudioPlusAPI
                 armorExists = false;
             else
             {
-                var newArmorObject = CreationPlus.SpawnItem(ModAPI.FindSpawnable(armorName), transform);
+                var newArmorObject = ModAPI.FindSpawnable(armorName).SpawnItem(transform);
                 ArmorObject = newArmorObject.GetComponent<ArmorBehaviour>();
                 Destroy(this);
             }
