@@ -1,5 +1,9 @@
 # STUDIO PLUS API CHANGELOG
 
+## v4.0.3 (12th August 2023)
+### TexturePlus:
+- The extension was considered suspicious by PPG. This was fixed.
+
 ## v4.0.2 (2nd June 2023)
 ### General:
 - All local variables are now explicit (no more var)

@@ -8,7 +8,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine.Events;
 using StudioPlusAPI;
-using System.Reflection;
 
 //StudioPlusAPI is an API for the game people playground, created by Dawid23 Gamer and Studio Plus. It allows for modders to program mods for the game more easily, or at least that's the idea. 
 //This API is released under the zlib license, by using it for your mod and/or downloading it you confirm that you read and agreed to the terms of said license.
@@ -142,7 +141,7 @@ namespace StudioPlusAPI
 
         public static void SetHealthBarColor(this LimbBehaviour limb, Color color)
         {
-            GameObject myStatus = (GameObject)typeof(LimbBehaviour).GetField("myStatus", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(limb);
+            GameObject myStatus = (GameObject)typeof(LimbBehaviour).GetFields().Where(method => method.Name == "myStatus").FirstOrDefault().GetValue(limb);
             myStatus.transform.Find("bar").GetComponent<SpriteRenderer>().color = color;
         }
 
